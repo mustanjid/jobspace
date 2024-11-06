@@ -1,7 +1,7 @@
 <?php
 
+use App\Models\Permission;
 use App\Models\Position;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('position_user', function (Blueprint $table) {
+        Schema::create('permission_position', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Position::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Permission::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('position_user');
+        Schema::dropIfExists('permission_position');
     }
 };

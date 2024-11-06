@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->integer('position_id')->default(0);
             $table->boolean(column: 'status');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

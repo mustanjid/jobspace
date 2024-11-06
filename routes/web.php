@@ -9,6 +9,7 @@ use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobSearchController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PositionContoller;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\TagController;
 use App\Http\Middleware\PositionMiddleware;
@@ -56,3 +57,10 @@ Route::middleware(['auth', PositionMiddleware::class.":admin"])->prefix('admin')
 
 
 Route::get('/livewire', TestLiveWire::class);
+
+Route::get('admin/roles', [PositionContoller::class, 'list']);
+Route::get('admin/roles/add', [PositionContoller::class, 'add']);
+Route::post('/admin/roles/add', [PositionContoller::class, 'insert']);
+Route::get('admin/roles/edit/{id}', [PositionContoller::class, 'edit']);
+Route::post('admin/roles/edit/{id}', [PositionContoller::class, 'update']);
+Route::post('admin/roles/delete/{id}', [PositionContoller::class, 'delete']); 

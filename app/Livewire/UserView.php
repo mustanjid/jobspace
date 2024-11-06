@@ -85,8 +85,6 @@ class UserView extends Component
         $this->userEditID = $userID;
         $this->userName = User::findOrFail($userID)->name;
         $this->userEmail = User::findOrFail($userID)->email;
-        $this->userPassword = User::findOrFail($userID)->password;
-        $this->userRole = User::findOrFail($userID)->role;
         $this->userStatus = User::findOrFail($userID)->status;
     }
 
@@ -96,24 +94,28 @@ class UserView extends Component
             [
                 'userName' => ['required'],
                 'userEmail' => ['required'],
-                'userPassword' => ['required'],
-                'userRole' => ['required'],
-                'userStatus' => ['required']
+                'userStatus' => ['required'],
             ]
         );
 
-        User::findOrFail($this->userEditID)->update(
-            [
-                'name' =>  $this->userName,
-                'email' =>  $this->userEmail,
-                'password' =>           $this->userPassword,
-                'status'  =>          $this->userStatus,
-            ]
-        );
-
-        Position::where('user_id', $this->userEditID)->update(
-            ['role_id' => $this->userRole]
-        );
+        if (in_array($this->userRole, User::findOrFail($this->userEditID)->positions->pluck('name')->collect()->toArray())) {
+            User::findOrFail($this->userEditID)->update(
+                [
+                    'name' =>  $this->userName,
+                    'email' =>  $this->userEmail,
+                    'status'  =>          $this->userStatus,
+                ]
+            );
+        } else {
+            User::findOrFail($this->userEditID)->update(
+                [
+                    'name' =>  $this->userName,
+                    'email' =>  $this->userEmail,
+                    'status'  =>          $this->userStatus,
+                ]
+            );
+            User::findOrFail($this->userEditID)->positions()->attach($this->userRole);
+        }
 
         $this->closeModal();
         request()->session()->flash('success', 'User updated successfully');

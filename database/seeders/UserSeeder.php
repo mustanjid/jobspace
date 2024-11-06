@@ -26,10 +26,5 @@ class UserSeeder extends Seeder
             'remember_token' => 1234,
 
         ]);
-        Position::factory()->hasAttached($user)->create(
-           [
-                'name' => 'editor'
-           ]
-        );
     }
 }
