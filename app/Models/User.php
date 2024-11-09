@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -46,17 +47,19 @@ class User extends Authenticatable
         ];
     }
 
-    public function positions(){
-        return $this->belongsToMany(Position::class);
-    }
-
-    public function hasPosition($position): bool
-    {
-        return $this->positions()->where('name', $position)->exists();
-    }
-
     public function employer()
     {
         return $this->hasOne(Employer::class);
+    }
+
+    public function checkPermission($permissionSlug, $position_id)
+    {
+
+        $permissions = Position::findOrFail($position_id)->permissions->pluck('slug')->toArray();
+        if (in_array($permissionSlug, $permissions)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

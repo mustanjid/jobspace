@@ -36,4 +36,10 @@ class Permission extends Model
     static public function getPermissionGroup($groupby){
         return Permission::where('groupBy', '=', $groupby)->get();
     }
+
+    public function positions()
+    {
+        return $this->belongsToMany(Position::class, 'permission_position');
+    }
+    
 }

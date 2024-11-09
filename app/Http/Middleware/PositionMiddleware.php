@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PositionPermission;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +15,13 @@ class PositionMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, ...$position)
+    public function handle(Request $request, Closure $next, $position)
     {
         $user = Auth::user();
 
         // Check if the user has any of the specified roles
-        if ($user && $user->positions->count()) {
+        $permission = PositionPermission::getPermission($position, $user->position_id);
+        if ($user && $user->position_id && $permission) {
             return $next($request);
         }
 

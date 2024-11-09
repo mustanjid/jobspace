@@ -2,12 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Http\Middleware\PositionMiddleware;
 use App\Models\Position;
+use App\Models\PositionPermission;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UserView extends Component
 {
@@ -28,6 +33,7 @@ class UserView extends Component
 
     public $isOpen = false;
     public $isDeleteModalOpen = false;
+    public $isAddModalOpen = false;
 
     public function setSortBy($sortByField)
     {
@@ -64,68 +70,115 @@ class UserView extends Component
         $this->userDeleteID = $userID;
     }
 
+    public function openAddModal()
+    {
+        $this->isAddModalOpen = true;
+    }
+
+    public function closeAddModal()
+    {
+        $this->isAddModalOpen = false;
+        $this->reset('userName', 'userEmail', 'userStatus', 'userPassword', 'userRole');
+    }
+
+    
+
     public function delete()
     {
-        $user = User::findOrFail($this->userDeleteID);
-        $user->delete();
-        $this->closeDeleteModal();
-        request()->session()->flash('failure', 'User deleted !');
+        $permission = PositionPermission::getPermission('delete user', Auth::user()->position_id);
+        if ($permission) {
+            $user = User::findOrFail($this->userDeleteID);
+            $user->delete();
+            $this->closeDeleteModal();
+            request()->session()->flash('failure', 'User deleted !');
+        } else {
+            abort(404);
+        }
     }
 
     public function closeModal()
     {
         $this->isOpen = false;
-        $this->reset('userName', 'userEmail', 'userPassword', 'userRole');
+        $this->reset('userName', 'userEmail', 'userStatus', 'userPassword', 'userRole');
     }
-
 
     public function edit($userID)
     {
-        $this->isOpen = true;
-        $this->userEditID = $userID;
-        $this->userName = User::findOrFail($userID)->name;
-        $this->userEmail = User::findOrFail($userID)->email;
-        $this->userStatus = User::findOrFail($userID)->status;
+        $permission = PositionPermission::getPermission('update user', Auth::user()->position_id);
+        if ($permission) {
+            $this->isOpen = true;
+            $this->userEditID = $userID;
+            $this->userName = User::findOrFail($userID)->name;
+            $this->userEmail = User::findOrFail($userID)->email;
+            $this->userStatus = User::findOrFail($userID)->status;
+            $this->userRole = User::findOrFail($userID)->position_id;
+        } else {
+            abort(404);
+        }
     }
 
     public function update()
     {
-        $this->validate(
-            [
-                'userName' => ['required'],
-                'userEmail' => ['required'],
-                'userStatus' => ['required'],
-            ]
-        );
+        $permission = PositionPermission::getPermission('update user', Auth::user()->position_id);
+        if ($permission) {
+            $this->validate(
+                [
+                    'userName' => ['required'],
+                    'userEmail' => ['required'],
+                    'userStatus' => ['required'],
+                    'userRole' => ['required'],
+                ]
+            );
 
-        if (in_array($this->userRole, User::findOrFail($this->userEditID)->positions->pluck('name')->collect()->toArray())) {
             User::findOrFail($this->userEditID)->update(
                 [
                     'name' =>  $this->userName,
                     'email' =>  $this->userEmail,
-                    'status'  =>          $this->userStatus,
+                    'status'  => $this->userStatus,
+                    'position_id'  => $this->userRole,
                 ]
             );
+            $this->closeModal();
+            request()->session()->flash('success', 'User updated successfully');
         } else {
-            User::findOrFail($this->userEditID)->update(
+            abort(404);
+        }
+    }
+
+    public function add()
+    {
+        $permission = PositionPermission::getPermission('update user', Auth::user()->position_id);
+        if ($permission) {
+            $this->validate(
                 [
-                    'name' =>  $this->userName,
-                    'email' =>  $this->userEmail,
-                    'status'  =>          $this->userStatus,
+                    'userName' => ['required'],
+                    'userEmail' => ['required'],
+                    'userStatus' => ['required'],
+                    'userPassword' => ['required', 'confirmed', Password::min(6)],
+                    'userRole' => ['required'],
                 ]
             );
-            User::findOrFail($this->userEditID)->positions()->attach($this->userRole);
-        }
 
-        $this->closeModal();
-        request()->session()->flash('success', 'User updated successfully');
+            User::create(
+    [
+                    'name' =>  $this->userName,
+                    'email' =>  $this->userEmail,
+                    'status'  => $this->userStatus,
+                    'password'  => Hash::make($this->userPassword),
+                    'position_id'  => $this->userRole,
+                ]
+            );
+            $this->closeAddModal();
+            request()->session()->flash('success', 'User created successfully');
+        } else {
+            abort(404);
+        }
     }
 
     public function render()
     {
         $usersWithPosition = DB::table('users')
-            ->join('position_user', 'users.id', '=', 'position_user.user_id')
-            ->join('positions', 'positions.id', '=', 'position_user.position_id')
+            ->join('positions', 'users.position_id', '=', 'positions.id')
             ->select('users.*', 'positions.name as position')
             ->paginate($this->perPage);
         //dd($usersWithPosition);

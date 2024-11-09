@@ -16,7 +16,7 @@
 
             @auth
                 <div class="flex justify-between gap-4 mx-auto">
-                    @if (Auth::user()->positions->count())
+                    @if (Auth::user()->position_id)
                         <x-nav-button href="{{ url('/admin/dashboard') }}">View Dashboard</x-nav-button>
                     @else
                         @if (Auth::user()->status)

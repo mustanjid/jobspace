@@ -23,11 +23,18 @@ class JobView extends Component
         $jobEditUrl,
         $jobEditSchedule,
         $jobEditFeature,
+        $jobEditEmployer,
         $jobEditStatus;
     public $jobDeleteID;
 
     public $isOpen = false;
     public $isDeleteModalOpen = false;
+    public $isAddModalOpen = false;
+
+    public function openAddModal()
+    {
+        $this->isAddModalOpen = true;
+    }
 
     public function setSortBy($sortByField)
     {

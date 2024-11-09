@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class PositionPermission extends Model
 {
@@ -23,4 +24,14 @@ class PositionPermission extends Model
     {
         return self::where('position_id', '=', $position_id)->get();
     }
+
+    static public function getPermission($slug, $position_id)
+    {
+        return self::select('permission_position.id')
+            ->join('permissions', 'permissions.id', '=', 'permission_position.permission_id')
+            ->where('permission_position.position_id', '=', $position_id)
+            ->where('permissions.slug', '=', $slug)
+            ->count();
+    }
+    
 }

@@ -6,11 +6,19 @@ use App\Models\Permission;
 use App\Models\Position;
 use App\Models\PositionPermission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PositionContoller extends Controller
 {
     public function list()
     {
+        $permissionUser = PositionPermission::getPermission('user', Auth::user()->position_id);
+
+        if(empty($permissionUser)){
+            abort(404);
+        }
+
+        $data['permissionAdd'] = PositionPermission::getPermission('add user', Auth::user()->position_id);
         $data['getRecord'] = Position::getRecord();
         return view('admin.role.index', $data);
     }
