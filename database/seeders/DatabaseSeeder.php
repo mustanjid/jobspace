@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
         // $user = User::factory(3)->create();
         // Role::factory(2)->create()->hasAttached($user);
 
+        $this->call(PositionSeeder::class);
+        $this->call(PermissionSeeder::class);
+        $this->call(PermissionPositionSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(JobSeeder::class);
     }

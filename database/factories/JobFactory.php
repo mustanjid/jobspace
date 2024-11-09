@@ -21,7 +21,7 @@ class JobFactory extends Factory
             'employer_id' => Employer::factory(),
             'title' => fake()->jobTitle,
             'salary'=> fake()->randomElement(['50, 000 - 60,000 TK', '30, 000 - 40,000 TK', '80, 000 - 90,000 TK']),
-            'location' => fake()->randomElement(['Dhaka, Bangladesh', 'Sylhet', 'Rajshahi, Bangladesh']),
+            'location' => fake()->city,
             'schedule' => fake()->randomElement(['Full Time', 'Part Time']),
             'url' => fake()->url,
             'featured' => false,

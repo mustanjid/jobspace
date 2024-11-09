@@ -19,7 +19,7 @@ class EmployerFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => "Hudson LLC",
+            'name' => fake()->company(),
             'logo' => "logos/LldkmYQQVZ4P7r4gomqytrm0aqgd3Rb0EUjO5dNp.webp",
         ];
     }

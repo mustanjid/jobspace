@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
 use App\Models\Position;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,11 +21,11 @@ class UserSeeder extends Seeder
         $user = User::factory()->create([
             'name' => "Paul",
             'email' => 'pual@example.com',
+            'position_id' => Position::select('id')->first()->id,
             'email_verified_at' => now(),
             'password' => Hash::make('123456'),
-            'status' => fake()->randomElement([1, 0]),
+            'status' => 1,
             'remember_token' => 1234,
-
         ]);
     }
 }
