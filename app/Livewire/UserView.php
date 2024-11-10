@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
@@ -20,25 +21,22 @@ class UserView extends Component
 
     public $search = '';
     public $perPage = 5;
+    public $isActive = '';
     public $isRole = '';
     public $sortBy = 'created_at';
     public $sortDir = 'DESC';
     public $userEditID;
-    public $userName,
-        $userEmail,
-        $userPassword,
-        $userStatus,
-        $userRole;
+    public $userName, $userEmail, $password, $userStatus, $userRole, $password_confirmation;
     public $userDeleteID;
 
+    public $isAddModalOpen = false;
     public $isOpen = false;
     public $isDeleteModalOpen = false;
-    public $isAddModalOpen = false;
 
     public function setSortBy($sortByField)
     {
         if ($this->sortBy === $sortByField) {
-            $this->sortDir = ($this->sortDir == "ASC") ? $this->sortDir = "DESC" : "ASC";
+            $this->sortDir = $this->sortDir == 'ASC' ? ($this->sortDir = 'DESC') : 'ASC';
             return;
         }
         $this->sortBy = $sortByField;
@@ -59,47 +57,42 @@ class UserView extends Component
         $this->resetPage();
     }
 
-    public function closeDeleteModal()
-    {
-        $this->isDeleteModalOpen = false;
-        $this->userDeleteID = '';
-    }
-    public function openDeleteModal($userID)
-    {
-        $this->isDeleteModalOpen = true;
-        $this->userDeleteID = $userID;
-    }
-
     public function openAddModal()
     {
         $this->isAddModalOpen = true;
     }
 
-    public function closeAddModal()
+    public function add()
     {
-        $this->isAddModalOpen = false;
-        $this->reset('userName', 'userEmail', 'userStatus', 'userPassword', 'userRole');
-    }
-
-    
-
-    public function delete()
-    {
-        $permission = PositionPermission::getPermission('delete user', Auth::user()->position_id);
+        $permission = PositionPermission::getPermission('update user', Auth::user()->position_id);
         if ($permission) {
-            $user = User::findOrFail($this->userDeleteID);
-            $user->delete();
-            $this->closeDeleteModal();
-            request()->session()->flash('failure', 'User deleted !');
+            $this->validate(rules: [
+                'userName' => ['required'],
+                'userEmail' => ['required'],
+                'userStatus' => ['required'],
+                'userRole' => ['required'],
+                'password' => ['required', Password::min(6)],
+                'password_confirmation' => 'required|same:password'
+
+            ]);
+            User::create([
+                'name' => $this->userName,
+                'email' => $this->userEmail,
+                'position_id' => (int)($this->userRole),
+                'status' => (int)($this->userStatus),
+                'password' => Hash::make($this->password),
+            ]);
+            $this->closeAddModal();
+            request()->session()->flash('success', 'User created successfully');
         } else {
             abort(404);
         }
     }
 
-    public function closeModal()
+    public function closeAddModal()
     {
-        $this->isOpen = false;
-        $this->reset('userName', 'userEmail', 'userStatus', 'userPassword', 'userRole');
+        $this->isAddModalOpen = false;
+        //$this->reset('userName', 'userEmail', 'userStatus', 'password', 'password_confirmation', 'userRole');
     }
 
     public function edit($userID)
@@ -121,58 +114,54 @@ class UserView extends Component
     {
         $permission = PositionPermission::getPermission('update user', Auth::user()->position_id);
         if ($permission) {
-            $this->validate(
-                [
-                    'userName' => ['required'],
-                    'userEmail' => ['required'],
-                    'userStatus' => ['required'],
-                    'userRole' => ['required'],
-                ]
-            );
+            $this->validate([
+                'userName' => ['required'],
+                'userEmail' => ['required'],
+                'userStatus' => ['required'],
+                'userRole' => ['required'],
+            ]);
 
-            User::findOrFail($this->userEditID)->update(
-                [
-                    'name' =>  $this->userName,
-                    'email' =>  $this->userEmail,
-                    'status'  => $this->userStatus,
-                    'position_id'  => $this->userRole,
-                ]
-            );
-            $this->closeModal();
+            User::findOrFail($this->userEditID)->update([
+                'name' => $this->userName,
+                'email' => $this->userEmail,
+                'status' => $this->userStatus,
+                'position_id' => $this->userRole,
+            ]);
+            $this->closeUpdateModal();
             request()->session()->flash('success', 'User updated successfully');
         } else {
             abort(404);
         }
     }
 
-    public function add()
+    public function closeUpdateModal()
     {
-        $permission = PositionPermission::getPermission('update user', Auth::user()->position_id);
-        if ($permission) {
-            $this->validate(
-                [
-                    'userName' => ['required'],
-                    'userEmail' => ['required'],
-                    'userStatus' => ['required'],
-                    'userPassword' => ['required', 'confirmed', Password::min(6)],
-                    'userRole' => ['required'],
-                ]
-            );
+        $this->isOpen = false;
+        $this->reset('userName', 'userEmail', 'userStatus', 'userRole');
+    }
 
-            User::create(
-    [
-                    'name' =>  $this->userName,
-                    'email' =>  $this->userEmail,
-                    'status'  => $this->userStatus,
-                    'password'  => Hash::make($this->userPassword),
-                    'position_id'  => $this->userRole,
-                ]
-            );
-            $this->closeAddModal();
-            request()->session()->flash('success', 'User created successfully');
+    public function openDeleteModal($userID)
+    {
+        $this->isDeleteModalOpen = true;
+        $this->userDeleteID = $userID;
+    }
+
+    public function delete()
+    {
+        $permission = PositionPermission::getPermission('delete user', Auth::user()->position_id);
+        if ($permission) {
+            $user = User::findOrFail($this->userDeleteID);
+            $user->delete();
+            $this->closeDeleteModal();
+            request()->session()->flash('failure', 'User deleted !');
         } else {
             abort(404);
         }
+    }
+    public function closeDeleteModal()
+    {
+        $this->isDeleteModalOpen = false;
+        $this->userDeleteID = '';
     }
 
     public function render()
@@ -180,11 +169,23 @@ class UserView extends Component
         $usersWithPosition = DB::table('users')
             ->join('positions', 'users.position_id', '=', 'positions.id')
             ->select('users.*', 'positions.name as position')
+            ->when($this->search, function ($query) {
+                $query->where(function ($query) {
+                    $query->where('users.name', 'like', '%' . $this->search . '%')
+                        ->orWhere('users.email', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->isActive !== '', function ($query) {
+                $query->where('users.status', $this->isActive);
+            })
+            ->when($this->sortBy !== 'name', function ($query) {
+                // Sort by other job columns
+                $query->orderBy($this->sortBy, $this->sortDir);
+            })
             ->paginate($this->perPage);
-        //dd($usersWithPosition);
-        //$users = User::latest()->with(['employer', 'positions'])->paginate($this->perPage);
+
         return view('livewire.user-view', [
-            'users' => $usersWithPosition
+            'users' => $usersWithPosition,
         ]);
     }
 }

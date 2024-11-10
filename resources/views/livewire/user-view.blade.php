@@ -119,6 +119,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($users as $user)
+                                @if (Auth::user()->id != $user->id)
                                     <tr wire:key={{ $user->id }} class="border-b dark:border-gray-700">
                                         <th scope="row"
                                             class="whitespace-nowrap px-4 py-3 font-medium text-gray-900 dark:text-white">
@@ -157,6 +158,7 @@
                                             @endif
                                         </td>
                                     </tr>
+                                @endif
                                 @endforeach
 
 
@@ -183,6 +185,7 @@
                 </div>
             </div>
 
+            {{-- Add user Modal --}}
             @if ($isAddModalOpen)
                 <div
                     class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
@@ -193,14 +196,14 @@
                         <div class="">
                             <!--body-->
                             <div class="flex-auto justify-center p-5 text-center">
-                                <form wire:submit="add">
+                                <form wire:submit.prevent="add">
                                     @csrf
                                     <div class="mb-6 grid gap-6 md:grid-cols-2">
                                         <div>
-                                            <label for="name"
+                                            <label for="userName"
                                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User
                                                 Name</label>
-                                            <input type="text" id="email" wire:model="userName"
+                                            <input type="text" id="userName" wire:model="userName"
                                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                                 placeholder="john@example.com" required />
                                             @error('userName')
@@ -210,10 +213,10 @@
                                         </div>
 
                                         <div>
-                                            <label for="email"
+                                            <label for="userEmail"
                                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User
                                                 Email</label>
-                                            <input type="text" id="email" wire:model="userEmail"
+                                            <input type="email" id="userEmail" wire:model="userEmail"
                                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                                 placeholder="john@example.com" required />
                                             @error('userEmail')
@@ -223,11 +226,11 @@
                                         </div>
 
                                         <div>
-                                            <label for="role"
+                                            <label for="userRole"
                                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select
                                                 Role</label>
 
-                                            <select id="role" wire:model="userRole"
+                                            <select id="userRole" wire:model="userRole"
                                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                                                 <option value="select">
                                                     Select</option>
@@ -243,10 +246,10 @@
                                         </div>
 
                                         <div>
-                                            <label for="status"
+                                            <label for="userstatus"
                                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select
                                                 Status</label>
-                                            <select id="status" wire:model="userStatus"
+                                            <select id="userstatus" wire:model="userStatus"
                                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                                                 <option value="Select">Select</option>
                                                 <option value=1>Active</option>
@@ -259,28 +262,23 @@
                                         </div>
 
                                         <div>
-                                            <label for="Password"
+                                            <label for="password"
                                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                            <input type="password" name="password" wire:model="userPassword"
+                                            <input type="password" id="password" wire:model="password"
                                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                                 required />
-                                            @error('userPassword')
+                                            @error('password')
                                                 <span
                                                     class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
                                             @enderror
                                         </div>
 
                                         <div>
-                                            <label for="Password Confirmation"
-                                                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Confirm
-                                                Password</label>
-                                            <input type="password" name="password_confirmation"
+                                            <label for="password_confirmationn"
+                                                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label> 
+                                            <input type="password" id="password_confirmation" wire:model="password_confirmation"
                                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                                 required />
-                                            @error('userPassword')
-                                                <span
-                                                    class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
-                                            @enderror
                                         </div>
 
                                     </div>
@@ -292,7 +290,7 @@
                             </div>
                             <!--footer-->
                             <div class="mt-2 flex justify-between p-2">
-                                <p>Add User</p>
+                                <p>Job Space</p>
 
                                 <button wire:click="closeAddModal()"
                                     class="mb-2 rounded-full border border-yellow-400 bg-yellow-400 px-5 py-2 text-sm font-medium tracking-wider text-white shadow-sm hover:bg-yellow-500 hover:shadow-lg md:mb-0">Cancel</button>
@@ -303,6 +301,7 @@
                 </div>
             @endif
 
+            {{-- Edit user modal --}}
             @if ($isOpen)
                 <div
                     class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
@@ -387,7 +386,7 @@
                             <div class="mt-2 flex justify-between p-2">
                                 <p>User - {{ $user->name }}</p>
 
-                                <button wire:click="closeModal()"
+                                <button wire:click="closeUpdateModal()"
                                     class="mb-2 rounded-full border border-yellow-400 bg-yellow-400 px-5 py-2 text-sm font-medium tracking-wider text-white shadow-sm hover:bg-yellow-500 hover:shadow-lg md:mb-0">Cancel</button>
 
                             </div>
