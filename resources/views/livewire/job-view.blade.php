@@ -183,7 +183,7 @@
         </div>
 
 
-        @if (true)
+        @if ($isAddModalOpen)
             <div
                 class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
                 <div class="absolute inset-0 z-0 bg-black opacity-80"></div>

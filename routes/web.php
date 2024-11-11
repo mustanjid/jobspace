@@ -9,6 +9,7 @@ use App\Http\Controllers\PositionContoller;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\TagController;
 use App\Http\Middleware\PositionMiddleware;
+use App\Livewire\EmployerView;
 use App\Livewire\JobView;
 use App\Livewire\UserView;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index']);
     Route::get('/users', UserView::class);
     Route::get('/jobs', JobView::class);
+    Route::get('/employers', EmployerView::class);
 });
 
 
