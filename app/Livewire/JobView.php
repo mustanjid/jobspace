@@ -18,13 +18,14 @@ class JobView extends Component
     public $sortDir = 'DESC';
     public $jobEditID;
     public $jobEditTitle,
-        $jobEditSalary,
-        $jobEditLocation,
-        $jobEditUrl,
-        $jobEditSchedule,
-        $jobEditFeature,
-        $jobEditEmployer,
-        $jobEditStatus;
+    $jobEditSalary,
+    $jobEditLocation,
+    $jobEditUrl,
+    $jobEditSchedule,
+    $jobEditFeature,
+    $jobEditEmployer,
+    $jobTags,
+    $jobEditStatus;
     public $jobDeleteID;
 
     public $isOpen = false;
@@ -129,7 +130,38 @@ class JobView extends Component
         request()->session()->flash('success', 'Job updated successfully');
     }
 
+    public function add()
+    {
+        $this->validate(
+            [
+                'jobEditTitle' => ['required'],
+                'jobEditSalary' => ['required'],
+                'jobEditLocation' => ['required'],
+                'jobEditUrl' => ['required', 'active_url'],
+                'jobEditSchedule' => ['required', Rule::in(['Part Time', 'Full Time'])],
+                'jobEditFeature' => ['required'],
+                'jobEditStatus' => ['required'],
+                'jobEditEmployer' => ['required'],
+                'jobTags' => ['required'],
+            ]
+        );
 
+        Job::create(
+            [
+                'employer_id' =>  $this->jobEditTitle,
+                'title' =>  $this->jobEditTitle,
+                'salary' =>  $this->jobEditSalary,
+                'location' =>           $this->jobEditLocation,
+                'url'    =>       $this->jobEditUrl,
+                'schedule'  =>          $this->jobEditSchedule,
+                'featured'    =>       $this->jobEditFeature,
+                'status'    =>       $this->jobEditStatus,
+            ]
+        );
+
+        $this->closeModal();
+        request()->session()->flash('success', 'Job updated successfully');
+    }
 
     public function render()
     {

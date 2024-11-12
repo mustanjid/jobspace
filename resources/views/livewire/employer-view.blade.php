@@ -139,7 +139,7 @@
                                     <td class="px-4 py-3"> {{ $employer->active_jobs_count }}</td>
                                     <td class="px-4 py-3">
                                         {{-- @if (!empty($permissionEditEmployer)) --}}
-                                        <button wire:click="edit({{ $employer->id }})"
+                                        <button wire:click="edit({{ $employer->user_id }})"
                                             class="rounded text-sm font-semibold text-teal-500 hover:text-teal-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="2" stroke="currentColor" class="h-5 w-5">
@@ -207,9 +207,9 @@
                                             Status</label>
                                         <select id="status" wire:model="employerStatus"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                                            <option {!! $employer->user_status == true ? 'selected' : '' !!} value=1>Active
+                                            <option {!! $employer->user_status == 1 ? 'selected' : '' !!} value=1>Active
                                             </option>
-                                            <option {!! $employer->user_status == false ? 'selected' : '' !!} value=0>Inactive
+                                            <option {!! $employer->user_status == 0 ? 'selected' : '' !!} value=0>Inactive
                                             </option>
                                         </select>
                                         @error('userStatus')

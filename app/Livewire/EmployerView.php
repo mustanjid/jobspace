@@ -96,8 +96,8 @@ class EmployerView extends Component
     {
         $permission = PositionPermission::getPermission('delete user', Auth::user()->position_id);
         if ($permission) {
-            $user = User::findOrFail($this->employerDeleteID);
-            $user->delete();
+            $employer = Employer::findOrFail($this->employerDeleteID);
+            $employer->delete();
             $this->closeDeleteModal();
             request()->session()->flash('failure', 'User deleted !');
         } else {
