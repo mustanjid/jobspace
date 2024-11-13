@@ -20,7 +20,7 @@ class JobController extends Controller
     {
         $jobs = Job::latest()->with(['employer', 'tags'])->get()->groupBy('featured');
         $tags = Tag::all();
-
+        
         return view('job.index', [
             'featuredJobs' => $jobs[1], 
             'jobs' => $jobs[0], 
@@ -41,25 +41,41 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = $request->validate([
+        $validated  = $request->validate([
             'title' => ['required'],
             'salary' => ['required'],
             'location' => ['required'],
             'schedule' => ['required', Rule::in(['Part Time', 'Full Time'])],
+            'featured' => 'nullable',
             'url' => ['required', 'active_url'],
-            'tags' => ['nullable']
+            'tags' => 'nullable|array',
+            'tags.*' => 'string',
+
         ]);
 
-        $attributes['featured'] = $request->has('featured');
-        $job =  Auth::user()->employer->jobs()->create(Arr::except($attributes, 'tags'));
+        if($validated['featured']){
+            $featured = 1;
+        }else{
+            $featured = 0;
+        }
+        
+        $job = Auth::user()->employer->jobs()->create([
+            'title' => $validated['title'],
+            'salary' => $validated['salary'],
+            'location' => $validated['location'],
+            'schedule' => $validated['schedule'],
+            'url' => $validated['url'],
+            'featured' => $featured,
+        ]);
 
-        if ($attributes['tags'] ?? false) {
-            foreach (explode(',', $attributes['tags']) as $tag) {
-                $job->tag($tag);
+        if (isset($validated['tags'])) {
+            foreach ($validated['tags'] as $tagName) {
+                $tag = Tag::firstOrCreate(['name' => trim($tagName)]);
+                $job->tags()->attach($tag);
             }
         }
 
-        return redirect('/');
+        return redirect('/')->with('message', 'Job posted successfully!');
     }
 
     /**
@@ -84,6 +100,12 @@ class JobController extends Controller
     public function update(UpdateJobRequest $request, Job $job)
     {
         //
+    }
+
+    public function fetchTags()
+    {
+        $tags = Tag::orderBy('created_at', 'desc')->take(5)->get();
+        return response()->json($tags);
     }
 
     /**

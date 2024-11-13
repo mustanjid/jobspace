@@ -9,6 +9,7 @@ use App\Http\Controllers\PositionContoller;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\TagController;
 use App\Http\Middleware\PositionMiddleware;
+use App\Livewire\EmpJobManager;
 use App\Livewire\EmployerView;
 use App\Livewire\JobView;
 use App\Livewire\UserView;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [JobController::class, 'index']);
 Route::get('/search', JobSearchController::class);
 Route::get('/tags/{tag:name}', TagController::class);
+Route::get('/tags', [JobController::class, 'fetchTags']);
 Route::get('/jobs/create', [JobController::class, 'create'])->middleware('auth');
 Route::post('/jobs', [JobController::class, 'store'])->middleware('auth');
 
@@ -30,7 +32,7 @@ Route::middleware('guest')->group(function () {
 Route::delete('/logout', [LoginController::class, 'destroy'])->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/emp-job-view', [EmployerController::class, 'index']);
+    Route::get('/emp-job-view', EmpJobManager::class);
 });
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
