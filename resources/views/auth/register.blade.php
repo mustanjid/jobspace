@@ -2,16 +2,33 @@
     <x-page-heading>Register</x-page-heading>
 
     <x-forms.form method="POST" action="/register" enctype="multipart/form-data">
-        <x-forms.input label="Name" name="name" />
-        <x-forms.input label="Email" name="email" type="email" />
-        <x-forms.input label="Password" name="password" type="password" />
-        <x-forms.input label="Password Confirmation" name="password_confirmation" type="password" />
+        <div class="grid grid-cols-1 gap-4 px-2 sm:px-6 md:grid-cols-2">
+            <!-- Left Column (Name, Email, Password) -->
+            <div>
+                <x-forms.input label="Name" name="name" />
+            </div>
+            <div>
+                <x-forms.input label="Email" name="email" type="email" />
+            </div>
+            <div>
+                <x-forms.input label="Password" name="password" type="password" />
+            </div>
+            <div>
+                <x-forms.input label="Password Confirmation" name="password_confirmation" type="password" />
+            </div>
 
-        <x-forms.divider />
+            <!-- Right Column (Employer Name, Employer Logo) -->
+            <div>
+                <x-forms.input label="Employer Name" name="employer" />
+            </div>
+            <div>
+                <x-forms.input label="Employer Logo" name="logo" type="file" />
+            </div>
+        </div>
 
-        <x-forms.input label="Employer Name" name="employer" />
-        <x-forms.input label="Employer Logo" name="logo" type="file" />
+        <div class="mb-6 mt-4 sm:mb-8">
+            <x-forms.button>Create Account</x-forms.button>
+        </div>
 
-        <x-forms.button>Create Account</x-forms.button>
     </x-forms.form>
 </x-layout>

@@ -12,13 +12,20 @@ use App\Http\Middleware\PositionMiddleware;
 use App\Livewire\EmpJobManager;
 use App\Livewire\EmployerView;
 use App\Livewire\JobView;
+use App\Livewire\UserJobView;
 use App\Livewire\UserView;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [JobController::class, 'index']);
-Route::get('/search', JobSearchController::class);
+Route::get('/all-jobs', UserJobView::class);
+
+Route::get('/employers/{employer:id}', [EmployerController::class, 'edit']);
+// Route::post('/update-employer', [EmployerController::class, 'update']);
+
+// Route::get('/search', JobSearchController::class);
+
 Route::get('/tags/{tag:name}', TagController::class);
-Route::get('/tags', [JobController::class, 'fetchTags']);
+Route::get('/tags', [JobController::class, 'fetchTags'])->middleware('auth');
 Route::get('/jobs/create', [JobController::class, 'create'])->middleware('auth');
 Route::post('/jobs', [JobController::class, 'store'])->middleware('auth');
 

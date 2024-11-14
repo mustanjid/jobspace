@@ -495,8 +495,6 @@
                 </div>
             </div>
         @endif
-
-
-
+        
     </x-dashboard-layout>
 </div>

@@ -1,27 +1,45 @@
 <x-layout>
     <x-page-heading>New Job</x-page-heading>
 
-    <x-forms.form method="POST" id="job-form" action="/jobs">
-        <x-forms.input label="Title" name="title" placeholder="CEO" />
-        <x-forms.input label="Salary" name="salary" placeholder="90,000 Tk || 40,000-50,000 TK" />
-        <x-forms.input label="Location" name="location" placeholder="Dhaka, Bangladesh" />
+    <!-- Form Container with Responsive Grid Layout -->
+    <div class="flex justify-center p-4 sm:p-4 lg:p-2">
+        <x-forms.form method="POST" id="job-form" action="/jobs"
+            class="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 grid grid-cols-1 gap-6 lg:grid-cols-2 mb-8 lg:mb-4">
+            <!-- Left Column -->
+            <div class="space-y-4">
+                <x-forms.input label="Title" name="title" placeholder="CEO"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <x-forms.input label="Salary" name="salary" placeholder="90,000 Tk || 40,000-50,000 TK"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <x-forms.input label="Location" name="location" placeholder="Dhaka, Bangladesh"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <x-forms.input label="URL" name="url" placeholder="https://acme.com/jobs/ceo-wanted"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
 
-        <x-forms.select label="Schedule" name="schedule">
-            <option>Select</option>
-            <option>Part Time</option>
-            <option>Full Time</option>
-        </x-forms.select>
+            <!-- Right Column -->
+            <div class="space-y-4">
+                <x-forms.select label="Schedule" name="schedule"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>Select</option>
+                    <option>Part Time</option>
+                    <option>Full Time</option>
+                </x-forms.select>
 
-        <x-forms.input label="URL" name="url" placeholder="https://acme.com/jobs/ceo-wanted" />
-        <x-forms.checkbox label="Feature (Costs Extra)" name="featured" />
+                <x-forms.checkbox label="Feature (Costs Extra)" name="featured" class="h-5 w-5 text-blue-500" />
 
-        <x-forms.input label="Tags (Add a tag and press enter or select from below)" id="tag-input"
-            placeholder="Web Development" name="tag-input" />
-        <div id="suggested-tags"></div>
-        <div id="selected-tags">Selected Tags:</div>
+                <x-forms.input label="Tags (Add a tag and press enter or select from below)" id="tag-input"
+                    placeholder="Web Development" name="tag-input"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <div id="suggested-tags"></div>
+                <div id="selected-tags" class="mt-2">Selected Tags:</div>
 
-        <x-forms.button>Publish</x-forms.button>
-    </x-forms.form>
+                <x-forms.button
+                    class="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Publish</x-forms.button>
+            </div>
+        </x-forms.form>
+    </div>
 </x-layout>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

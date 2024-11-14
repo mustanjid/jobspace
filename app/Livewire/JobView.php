@@ -77,7 +77,7 @@ class JobView extends Component
         $job = Job::findOrFail($this->jobDeleteID);
         $job->delete();
         $this->closeDeleteModal();
-        request()->session()->flash('failure', 'Job deleted !');
+        session()->flash('failure', 'Job deleted !');
     }
 
     public function closeModal()
@@ -127,7 +127,7 @@ class JobView extends Component
         );
 
         $this->closeModal();
-        request()->session()->flash('success', 'Job updated successfully');
+       session()->flash('success', 'Job updated successfully');
     }
 
     public function add()
@@ -160,7 +160,7 @@ class JobView extends Component
         );
 
         $this->closeModal();
-        request()->session()->flash('success', 'Job updated successfully');
+        session()->flash('success', 'Job updated successfully');
     }
 
     public function render()

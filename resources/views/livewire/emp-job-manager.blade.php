@@ -1,16 +1,17 @@
 <div>
     <x-layout>
-        @if (session('success'))
-            <div id="successMessage" class="flex items-center bg-blue-500 px-4 py-3 text-sm font-bold text-white"
-                role="alert">
+       
+        <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg mb-8">
+            @if (session('success'))
+            <div id="successMessage" class="flex items-center bg-blue-500 px-4 py-3 text-sm font-bold text-white" role="alert">
                 <svg class="mr-2 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                     <path
                         d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
                 </svg>
                 <p>{{ session('success') }}</p>
             </div>
-        @endif
-        <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+            @endif
+
             @if (session('failure'))
                 <div id="alert-2"
                     class="mb-4 flex items-center rounded-lg bg-red-50 p-4 text-red-800 dark:bg-gray-800 dark:text-red-400"
@@ -28,6 +29,7 @@
 
                 </div>
             @endif
+
             <h6 class="px-2 py-2 text-lg font-bold dark:text-white">Jobs of {{ Auth::user()->employer->name }}</h6>
             <div class="d flex items-center justify-between p-4">
                 <div class="flex w-2/3 justify-between">
@@ -157,164 +159,152 @@
                 {{ $empjobs->links() }}
             </div>
         </div>
-        <script>
-            $(document).ready(function() {
-                (function() {
-                    setTimeout(function() {
-                        $('#successMessage').delay(5000).slideUp(300);
-                    })();
-                });
-            })
-        </script>
-    </x-layout>
-
-    @if ($isOpen)
-        <div
-            class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
-            <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
-            <div class="relative mx-auto my-auto w-full max-w-lg rounded-xl bg-white p-5 shadow-lg">
-                <!--content-->
-                <p>Edit Job Form</p>
-                <div class="">
-                    <!--body-->
-                    <div class="flex-auto justify-center p-5 text-center">
-                        <form wire:submit="update">
-                            @csrf
-                            <div class="mb-6 grid gap-6 md:grid-cols-2">
-                                <div>
-                                    <label for="title"
-                                        class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Title
-                                    </label>
-                                    <input type="text" wire:model="jobEditTitle" id="title"
-                                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Web Developer" />
-                                    @error('jobEditTitle')
+        
+        @if($isOpen)
+            <div
+                class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
+                <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
+                <div class="relative mx-auto my-auto w-full max-w-lg rounded-xl bg-white p-5 shadow-lg">
+                    <!--content-->
+                    <p>Edit Job Form</p>
+                    <div class="">
+                        <!--body-->
+                        <div class="flex-auto justify-center p-5 text-center">
+                            <form wire:submit="update">
+                                @csrf
+                                <div class="mb-6 grid gap-6 md:grid-cols-2">
+                                    <div>
+                                        <label for="title"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Title
+                                        </label>
+                                        <input type="text" wire:model="jobEditTitle" id="title"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Web Developer" />
+                                        @error('jobEditTitle')
                                         <span class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
-                                    @enderror
-
-                                </div>
-
-                                <div>
-                                    <label for="salary"
-                                        class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Salary</label>
-                                    <input type="text" id="salary" wire:model="jobEditSalary"
-                                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="40,000 - 50,000 Tk" required />
-                                    @error('jobEditSalary')
+                                        @enderror
+            
+                                    </div>
+            
+                                    <div>
+                                        <label for="salary"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Salary</label>
+                                        <input type="text" id="salary" wire:model="jobEditSalary"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="40,000 - 50,000 Tk" required />
+                                        @error('jobEditSalary')
                                         <span class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="location"
-                                        class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Location</label>
-                                    <input type="text" id="location" wire:model="jobEditLocation"
-                                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Dhaka, Bangladesh" required />
-                                    @error('jobEditLocation')
+                                        @enderror
+                                    </div>
+            
+                                    <div>
+                                        <label for="location"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Location</label>
+                                        <input type="text" id="location" wire:model="jobEditLocation"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Dhaka, Bangladesh" required />
+                                        @error('jobEditLocation')
                                         <span class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="url"
-                                        class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Url</label>
-                                    <input type="text" id="url" wire:model="jobEditUrl"
-                                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="http://padberg.com/" required />
-                                    @error('jobEditUrl')
+                                        @enderror
+                                    </div>
+            
+                                    <div>
+                                        <label for="url"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Url</label>
+                                        <input type="text" id="url" wire:model="jobEditUrl"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="http://padberg.com/" required />
+                                        @error('jobEditUrl')
                                         <span class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="schedule"
-                                        class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select
-                                        Schedule</label>
-                                    <select id="schedule" wire:model="jobEditSchedule"
-                                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                                        <option {!! $jobEditSchedule == 'Full Time' ? 'selected' : '' !!} value="Full Time">Full
-                                            Time</option>
-                                        <option {!! $jobEditSchedule == 'Part Time' ? 'selected' : '' !!} value="Part Time">Part
-                                            Time</option>
-                                    </select>
-                                    @error('jobEditSchedule')
+                                        @enderror
+                                    </div>
+            
+                                    <div>
+                                        <label for="schedule"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select
+                                            Schedule</label>
+                                        <select id="schedule" wire:model="jobEditSchedule"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                                            <option {!! $jobEditSchedule=='Full Time' ? 'selected' : '' !!} value="Full Time">Full
+                                                Time</option>
+                                            <option {!! $jobEditSchedule=='Part Time' ? 'selected' : '' !!} value="Part Time">Part
+                                                Time</option>
+                                        </select>
+                                        @error('jobEditSchedule')
                                         <span class="mt-2 text-xs font-medium text-red-600">{{ $message }}</span>
-                                    @enderror
+                                        @enderror
+                                    </div>
                                 </div>
-                            </div>
-
-                            <label for="tags"
-                                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Tags (Add and
-                                press Enter)</label>
-                            <input type="text" id="tags" name="tags"
-                                wire:keydown.enter.prevent="addTag($event.target.value)"
-                                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="Management" />
-                            <div class="mb-4 mt-2 text-xs">
-                                @foreach ($tags as $tag)
-                                    <span
-                                        class="m-1 inline-flex items-center rounded bg-blue-100 px-2 py-1 text-blue-700">
+            
+                                <label for="tags" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Tags (Add and
+                                    press Enter)</label>
+                                <input type="text" id="tags" name="tags" wire:keydown.enter.prevent="addTag($event.target.value)"
+                                    class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="Management" />
+                                <div class="mb-4 mt-2 text-xs">
+                                    @foreach ($tags as $tag)
+                                    <span class="m-1 inline-flex items-center rounded bg-blue-100 px-2 py-1 text-blue-700">
                                         {{ $tag }}
                                         <button type="button" wire:click="removeTag('{{ $tag }}')"
                                             class="ml-2 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-white focus:outline-none">&times;</button>
                                     </span>
-                                @endforeach
-                            </div>
-
-                            <button type="submit"
-                                class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto">Update</button>
-                        </form>
-
-                    </div>
-                    <!--footer-->
-                    <div class="mt-2 flex justify-between p-2">
-                        <p>Job - {{ $jobEditTitle }}</p>
-
-                        <button wire:click="closeModal()"
-                            class="mb-2 rounded-full border border-yellow-400 bg-yellow-400 px-5 py-2 text-sm font-medium tracking-wider text-white shadow-sm hover:bg-yellow-500 hover:shadow-lg md:mb-0">Cancel</button>
-
+                                    @endforeach
+                                </div>
+            
+                                <button type="submit"
+                                    class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto">Update</button>
+                            </form>
+            
+                        </div>
+                        <!--footer-->
+                        <div class="mt-2 flex justify-between p-2">
+                            <p>Job - {{ $jobEditTitle }}</p>
+            
+                            <button wire:click="closeModal()"
+                                class="mb-2 rounded-full border border-yellow-400 bg-yellow-400 px-5 py-2 text-sm font-medium tracking-wider text-white shadow-sm hover:bg-yellow-500 hover:shadow-lg md:mb-0">Cancel</button>
+            
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
-
-    @if ($isDeleteModalOpen)
-        <div
-            class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
-            <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
-            <div class="relative max-h-full w-full max-w-md p-4">
-                <div class="relative rounded-lg bg-white shadow dark:bg-gray-700">
-                    <button type="button" wire:click="closeDeleteModal"
-                        class="absolute end-2.5 top-3 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
-                        data-modal-hide="popup-modal">
-                        <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                    <div class="p-4 text-center md:p-5">
-                        <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want
-                            to
-                            delete this job?</h3>
-                        <button wire:click="delete" type="button"
-                            class="inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800">
-                            Yes, I'm sure
+        @endif
+            
+        @if($isDeleteModalOpen)
+            <div
+                class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
+                <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
+                <div class="relative max-h-full w-full max-w-md p-4">
+                    <div class="relative rounded-lg bg-white shadow dark:bg-gray-700">
+                        <button type="button" wire:click="closeDeleteModal"
+                            class="absolute end-2.5 top-3 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-hide="popup-modal">
+                            <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
                         </button>
-                        <button wire:click="closeDeleteModal" type="button"
-                            class="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">No,
-                            cancel</button>
+                        <div class="p-4 text-center md:p-5">
+                            <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want
+                                to
+                                delete this job?</h3>
+                            <button wire:click="delete" type="button"
+                                class="inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800">
+                                Yes, I'm sure
+                            </button>
+                            <button wire:click="closeDeleteModal" type="button"
+                                class="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">No,
+                                cancel</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
+    </x-layout>
 </div>

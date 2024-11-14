@@ -9,6 +9,13 @@ class TagController extends Controller
 {
     public function __invoke(Tag $tag)
     {
-        return view('result', ['jobs' =>  $tag->jobs]);
+        $jobs = $tag->jobs()
+            ->where('status', 1) // Active jobs
+            ->whereHas('employer', function ($query) {
+                $query->where('status', 1); // Active employer
+            })
+            ->get();
+
+        return view('result', ['jobs' =>  $jobs]);
     }
 }

@@ -1,6 +1,6 @@
    @props(['job'])
    <div
-       class="p-4 bg-black/5 rounded-xl flex flex-col text-center border border-transparent hover:border-blue-800 group transition-colors duration-300">
+       class="p-4 bg-amber-100 rounded-xl flex flex-col text-center border border-transparent hover:border-blue-800 group transition-colors duration-300">
        {{-- employer --}}
        <div class="self-start text-sm">{{ $job->employer->name }}</div>
 

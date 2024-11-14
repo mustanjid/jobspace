@@ -18,12 +18,28 @@ class JobController extends Controller
      */
     public function index()
     {
-        $jobs = Job::latest()->with(['employer', 'tags'])->get()->groupBy('featured');
-        $tags = Tag::all();
-        
+        $jobs = Job::latest()
+            ->with(['employer', 'tags'])
+            ->where('status', 1) // Active jobs
+            ->whereHas('employer', function ($query) {
+                $query->where('status', 1); // Active employer
+            })
+            ->get()
+            ->groupBy('featured');
+
+        $tags = Tag::whereHas('jobs', function ($query) {
+            $query->where('status', 1) // Active jobs
+                ->whereHas('employer', function ($query) {
+                    $query->where('status', 1); // Active employer
+                });
+        })->get();
+
+        $featuredJobs = $jobs->get(1)?->take(6); // Top 6 featured jobs
+        $nonFeaturedJobs = $jobs->get(0)?->take(9);
+
         return view('job.index', [
-            'featuredJobs' => $jobs[1], 
-            'jobs' => $jobs[0], 
+            'featuredJobs' => $featuredJobs,
+            'jobs' => $nonFeaturedJobs,
             'tags' => $tags
         ]);
     }
@@ -53,12 +69,17 @@ class JobController extends Controller
 
         ]);
 
-        if($validated['featured']){
-            $featured = 1;
-        }else{
+        $featuredValue = $validated['featured'] ?? ''; // Default to an empty string if 'featured' is not set
+
+        if ($featuredValue == '') {
             $featured = 0;
+        } else if ($featuredValue == '0') {
+            $featured = 0;
+        } else {
+            $featured = 1;
         }
-        
+
+
         $job = Auth::user()->employer->jobs()->create([
             'title' => $validated['title'],
             'salary' => $validated['salary'],

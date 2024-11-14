@@ -36,7 +36,7 @@ class EmpJobManager extends Component
 
     // public function mount()
     // {
-        
+
     // }
 
     public function addTag($tagName)
@@ -76,6 +76,12 @@ class EmpJobManager extends Component
         $this->resetPage();
     }
 
+    public function closeDeleteModal()
+    {
+        $this->isDeleteModalOpen = false;
+        $this->jobDeleteID = '';
+    }
+
     public function openDeleteModal($jobID)
     {
         $this->isDeleteModalOpen = true;
@@ -84,16 +90,24 @@ class EmpJobManager extends Component
 
     public function delete()
     {
-        $job = Job::findOrFail($this->jobDeleteID);
-        $job->delete();
-        $this->closeDeleteModal();
-    }
+        $job = Job::find($this->jobDeleteID);
 
-    public function closeDeleteModal()
-    {
-        $this->isDeleteModalOpen = false;
-        $this->jobDeleteID = '';
-        $this->resetPage();
+        // Check if the job exists and the authenticated user is authorized to delete
+        if ($job && $job->employer && $job->employer->user_id == Auth::user()->id) {
+            $job->delete();
+            $this->closeDeleteModal();
+            session()->flash('failure', 'Job deleted!');
+
+            // Dispatch an event to the frontend for UI updates if needed
+            return $this->dispatch('jobDeleted');
+        } else {
+            // Handle missing job or unauthorized access
+            session()->flash('error', 'You are not authorized to delete this job, or the job no longer exists.');
+            $this->closeDeleteModal();
+        }
+
+        // Reset jobDeleteID to avoid further issues
+        $this->jobDeleteID = null;
     }
 
     public function edit($jobID)
@@ -145,8 +159,7 @@ class EmpJobManager extends Component
 
         $this->closeModal();
         $this->resetPage();
-        request()->session()->flash('success', 'Job updated successfully');
-       
+        session()->flash('success', 'Job updated successfully');
     }
 
     public function closeModal()
