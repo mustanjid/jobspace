@@ -1,5 +1,4 @@
 <x-layout>
-    <x-page-heading>Log In</x-page-heading>
     @if (session('success'))
     <div id="successMessage" class="flex items-center bg-blue-500 px-4 py-3 text-sm font-bold text-white" role="alert">
         <svg class="mr-2 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -9,7 +8,7 @@
         <p>{{ session('success') }}</p>
     </div>
     @endif
-    
+
     @if (session('error'))
     <div id="alert-2"
         class="mb-4 flex items-center rounded-lg bg-red-50 p-4 text-red-800 dark:bg-gray-800 dark:text-red-400"
@@ -27,19 +26,17 @@
     
     </div>
     @endif
-    <div class="flex justify-center px-4">
-        <x-forms.form method="POST" action="/login" class="w-full sm:w-3/4 md:w-1/2 lg:w-1/3">
-            <x-forms.input label="Email" name="email" type="email" />
-            <x-forms.input label="Password" name="password" type="password" />
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-4">
-                    <x-forms.button>Log In</x-forms.button>
-                    <a class="text-sm font-medium text-blue-500 underline hover:text-blue-700"
-                        href="/forgot-password">Forget
-                        Password?</a>
-                </div>
+    
+    <x-page-heading>Update Password</x-page-heading>
+    <div class="flex justify-center px-4 space-y-5 mb-8">
+        <x-forms.form method="POST" action="/update-password" class="w-full sm:w-3/4 md:w-1/2 lg:w-1/3">
+            <x-forms.input label="Current Password" name="current_password" type="password" />
+            <x-forms.input label="New Password" name="new_password" type="password" />
+            <x-forms.input label="Confirm New Password" name="new_password_confirmation" type="password" />
+            <div class="mb-8">
+                <x-forms.button>Update Password</x-forms.button>
             </div>
-
         </x-forms.form>
     </div>
+
 </x-layout>

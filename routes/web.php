@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobSearchController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PositionContoller;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\TagController;
@@ -20,7 +22,14 @@ Route::get('/', [JobController::class, 'index']);
 Route::get('/all-jobs', UserJobView::class);
 
 Route::get('/employers/{employer:id}', [EmployerController::class, 'edit']);
-// Route::post('/update-employer', [EmployerController::class, 'update']);
+Route::patch('/employers/{employer}', [EmployerController::class, 'updatePassword']);
+Route::get('/update-password', [PasswordController::class, 'edit'])->middleware('auth');
+Route::post('/update-password', [PasswordController::class, 'updatePassword'])->middleware('auth');
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot-password');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'verifyEmail'])->name('forgot-password.verify');
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset-password');
+Route::post('/reset-password', [ForgotPasswordController::class, 'updatePassword'])->name('reset-password.submit');
 
 // Route::get('/search', JobSearchController::class);
 

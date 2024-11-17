@@ -19,18 +19,18 @@
                     @if (Auth::user()->position_id)
                         <x-nav-button href="{{ url('/admin/dashboard') }}">View Dashboard</x-nav-button>
                     @else
-                        @if (Auth::user()->status)
+                        @if (Auth::user()->status && Auth::user()->employer)
                             <x-nav-button href="{{ url('/jobs/create ') }}">Post a Job</x-nav-button>
                         @endif
                         <button id="dropdownUserAvatarButton" data-dropdown-toggle="dropdownAvatar"
                             class="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 md:me-0"
                             type="button">
                             <span class="sr-only">Open user menu</span>
-                            @if(Storage::url(Auth::user()->employer->logo) != '')
+                            @if (Storage::url(Auth::user()->employer->logo) != '')
                                 <img class="h-8 w-8 rounded-full" src="{{ Storage::url(Auth::user()->employer->logo) }}"
                                     alt="user photo">
                             @else
-                            <img class="h-8 w-8 rounded-full" src="https://picsum.photos" alt="user photo">
+                                <img class="h-8 w-8 rounded-full" src="https://picsum.photos" alt="user photo">
                             @endif
                         </button>
 
@@ -42,20 +42,33 @@
                                 <div class="truncate font-medium">{{ Auth::user()->email }}</div>
                                 <div class="truncate font-medium">{{ Auth::user()->employer->name }}</div>
                             </div>
-                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownUserAvatarButton">
-                                <li>
-                                    <a href="{{ url('/jobs/create ') }}"
-                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Post
-                                        a Job</a>
-                                    <a href="{{ url('/emp-job-view') }}"
-                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View
-                                        Jobs</a>
-                                    <a href="/employers/{{ Auth::user()->employer->id }}"
-                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Update
-                                        Info</a>
-                                </li>
-                            </ul>
+                            @if (Auth::user()->status && Auth::user()->employer)
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    aria-labelledby="dropdownUserAvatarButton">
+                                    <li>
+                                        <a href="{{ url('/jobs/create ') }}"
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Post
+                                            a Job</a>
+                                        <a href="{{ url('/emp-job-view') }}"
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View
+                                            Jobs</a>
+                                        <a href="/employers/{{ Auth::user()->employer->id }}"
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Update
+                                            Info</a>
+                                        <a href="/update-password"
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Update
+                                            Password</a>
+                                    </li>
+                                </ul>
+                            @else
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    aria-labelledby="dropdownUserAvatarButton">
+                                    <li>
+                                        <p class="p-1 text-red-500">Account not activated yet</p>
+                                    </li>
+                                </ul>
+                            @endif
+
                             <div class="py-2">
                                 <form method="POST" action="/logout">
                                     @csrf

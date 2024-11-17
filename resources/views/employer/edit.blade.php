@@ -1,19 +1,18 @@
 <x-layout>
     <x-page-heading>Edit Employer - {{ $employer->name }}</x-page-heading>
 
-    <x-forms.form method="POST" action="" enctype="multipart/form-data" class="mb-6">
+    <x-forms.form method="POST" action="/employers/{{ $employer->id }}" enctype="multipart/form-data" class="mb-6">
         @csrf
-        @method('PUT')
-
+        @method('PATCH')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2 sm:px-6">
             <!-- Employer Name Field -->
             <div>
-                <x-forms.input label="Employer Name" name="employer" value="{{ old('employer', $employer->name) }}" />
+                <x-forms.input label="employer" name="employer" value="{{ old('employer', $employer->name) }}" />
             </div>
 
             <!-- Employer Logo Field -->
             <div>
-                <x-forms.input label="Employer Logo" name="logo" type="file" />
+                <x-forms.input label="logo" name="logo" type="file" />
                 @if ($employer->logo)
                 <div class="mt-2">
                     <p>Current Logo:</p>

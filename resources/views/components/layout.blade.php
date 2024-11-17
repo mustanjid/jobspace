@@ -1,3 +1,5 @@
+@props(['fixed' => false])
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,600;1,600&display=swap"
         rel="stylesheet">
     <title>Job Space</title>
-   @vite(['resources/js/app.js'])
+    @vite(['resources/js/app.js'])
     @livewireStyles
 </head>
 
@@ -28,7 +30,8 @@
             {{ $slot }}
         </main>
     </div>
-    <x-footer/>
+   <x-footer :fixed="$fixed" />
     @livewireScripts
 </body>
+
 </html>

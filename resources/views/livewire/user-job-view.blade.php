@@ -1,5 +1,5 @@
 <div>
-    <x-layout>
+    <x-layout :fixed="$fixed">
         <div class="space-y-4">
 
             <!-- Filters Section -->

@@ -14,6 +14,12 @@ class UserJobView extends Component
     public $perPage = 5;
     public $isTag = '';
     public $isStatus = '';
+    public $fixed = true;
+
+    public function mount($fixed = true)
+    {
+        $this->fixed = $fixed; // Optionally set the value of $fixed when mounting the component
+    }
 
     public function resetFields()
     {
@@ -32,11 +38,11 @@ class UserJobView extends Component
     public function render()
     {
         $jobs = Job::latest()
-        ->with(['employer', 'tags'])
-        ->where('status', 1) // Ensure only active jobs
-        ->whereHas('employer', function ($query) {
-            $query->where('status', 1); // Ensure only active employers
-        })
+            ->with(['employer', 'tags'])
+            ->where('status', 1) // Ensure only active jobs
+            ->whereHas('employer', function ($query) {
+                $query->where('status', 1); // Ensure only active employers
+            })
             ->when(
                 $this->search !== '',
                 function ($query) {
@@ -66,6 +72,9 @@ class UserJobView extends Component
             ->paginate($this->perPage);
 
 
-        return view('livewire.user-job-view', ['jobs' => $jobs]);
+        return view('livewire.user-job-view', [
+            'jobs' => $jobs,
+            'fixed' => $this->fixed
+        ]);
     }
 }

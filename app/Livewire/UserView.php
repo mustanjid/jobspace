@@ -185,7 +185,7 @@ class UserView extends Component
             ->paginate($this->perPage);
 
         return view('livewire.user-view', [
-            'users' => $usersWithPosition,
+            'users' => $usersWithPosition
         ]);
     }
 }
