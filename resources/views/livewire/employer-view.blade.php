@@ -120,6 +120,7 @@
                                     {{-- @endif --}}
                                 </tr>
                             </thead>
+                           <p class="text-xs text-right p-2">*TJ=Total Jobs, *FJ=Featured Jobs, *AJ=Active Jobs</p>
                             <tbody>
                                 @foreach ($employers as $employer)
                                 <tr wire:key={{ $employer->user_id }} class="border-b dark:border-gray-700">

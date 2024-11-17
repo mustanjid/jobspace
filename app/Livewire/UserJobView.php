@@ -14,12 +14,6 @@ class UserJobView extends Component
     public $perPage = 5;
     public $isTag = '';
     public $isStatus = '';
-    public $fixed = true;
-
-    public function mount($fixed = true)
-    {
-        $this->fixed = $fixed; // Optionally set the value of $fixed when mounting the component
-    }
 
     public function resetFields()
     {

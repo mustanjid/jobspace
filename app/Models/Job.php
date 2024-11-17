@@ -10,16 +10,17 @@ class Job extends Model
     use HasFactory;
     protected $guarded = []; 
 
-    public function tag(string $name): void
-    {
-        $tag = Tag::firstOrCreate(['name' => strtolower($name)]);
-        $this->tags()->attach($tag);
-    }
+    // public function tag(string $name): void
+    // {
+    //     $tag = Tag::firstOrCreate(['name' => strtolower($name)]);
+    //     $this->tags()->attach($tag);
+    // }
 
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
     }
+    
     public function employer()
     {
         return $this->belongsTo(Employer::class);

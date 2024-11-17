@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Job;
+use App\Models\Tag;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
@@ -18,24 +19,72 @@ class JobView extends Component
     public $sortDir = 'DESC';
     public $jobEditID;
     public $jobEditTitle,
-    $jobEditSalary,
-    $jobEditLocation,
-    $jobEditUrl,
-    $jobEditSchedule,
-    $jobEditFeature,
-    $jobEditEmployer,
-    $jobTags,
-    $jobEditStatus;
+        $jobEditSalary,
+        $jobEditLocation,
+        $jobEditUrl,
+        $jobEditSchedule,
+        $jobEditFeature,
+        $jobEditEmployer,
+        $jobEditStatus;
     public $jobDeleteID;
 
     public $isOpen = false;
     public $isDeleteModalOpen = false;
     public $isAddModalOpen = false;
 
-    public function openAddModal()
+    public $tagInput = '';
+    public $selectedTags = [];
+    public $suggestedTags;
+
+    public function mount()
     {
-        $this->isAddModalOpen = true;
+        // Example: Get suggested tags
+        $this->suggestedTags = Tag::all();
     }
+
+    public function addTag()
+    {
+        // Prevent adding empty tags
+        if (empty($this->tagInput)) {
+            return;
+        }
+
+        // Assuming $this->selectedTags is an array, and we assign an ID when adding a tag
+        $newTag = [
+            'id' => count($this->selectedTags) + 1, // You can improve this for a more robust ID system
+            'name' => $this->tagInput,
+        ];
+
+        // Add the new tag to the selected tags array
+        $this->selectedTags[] = $newTag;
+
+        // Clear the input field after adding the tag
+        $this->tagInput = '';
+    }
+
+
+
+    public function selectSuggestedTag($tagId)
+    {
+        $tag = Tag::find($tagId);
+        if ($tag && !in_array($tag->id, array_column($this->selectedTags, 'id'))) {
+            $this->selectedTags[] = $tag;
+        }
+    }
+
+
+    public function removeTag($tagId)
+    {
+        // Filter out the tag with the given ID
+        $this->selectedTags = array_filter($this->selectedTags, function ($tag) use ($tagId) {
+            return $tag['id'] != $tagId; // Ensure you are accessing 'id' properly
+        });
+
+        // Reindex the array to reset the keys (optional, but helps if you need a clean array)
+        $this->selectedTags = array_values($this->selectedTags);
+    }
+
+
 
     public function setSortBy($sortByField)
     {
@@ -91,13 +140,24 @@ class JobView extends Component
     {
         $this->isOpen = true;
         $this->jobEditID = $jobID;
-        $this->jobEditTitle = Job::findOrFail($jobID)->title;
-        $this->jobEditSalary = Job::findOrFail($jobID)->salary;
-        $this->jobEditLocation = Job::findOrFail($jobID)->location;
-        $this->jobEditUrl = Job::findOrFail($jobID)->url;
-        $this->jobEditSchedule = Job::findOrFail($jobID)->schedule;
-        $this->jobEditFeature = Job::findOrFail($jobID)->featured;
-        $this->jobEditStatus = Job::findOrFail($jobID)->status;
+        $job = Job::findOrFail($jobID);
+
+        $this->jobEditTitle = $job->title;
+        $this->jobEditSalary = $job->salary;
+        $this->jobEditLocation = $job->location;
+        $this->jobEditUrl = $job->url;
+        $this->jobEditSchedule = $job->schedule;
+        $this->jobEditFeature = $job->featured;
+        $this->jobEditStatus = $job->status;
+
+        // Get the existing tags
+        $this->selectedTags = $job->tags;
+
+        // Get suggested tags excluding the ones already assigned to the job
+        $this->suggestedTags = Tag::whereNotIn('id', $job->tags->pluck('id'))->take(7)->get();
+
+        // Clear input for new tag
+        $this->tagInput = '';
     }
 
     public function update()
@@ -114,20 +174,52 @@ class JobView extends Component
             ]
         );
 
-        Job::findOrFail($this->jobEditID)->update(
+        // Update the job record
+        $job = Job::findOrFail($this->jobEditID);
+        $job->update(
             [
                 'title' =>  $this->jobEditTitle,
                 'salary' =>  $this->jobEditSalary,
-                'location' =>           $this->jobEditLocation,
-                'url'    =>       $this->jobEditUrl,
-                'schedule'  =>          $this->jobEditSchedule,
-                'featured'    =>       $this->jobEditFeature,
-                'status'    =>       $this->jobEditStatus,
+                'location' => $this->jobEditLocation,
+                'url' => $this->jobEditUrl,
+                'schedule' => $this->jobEditSchedule,
+                'featured' => $this->jobEditFeature,
+                'status' => $this->jobEditStatus,
             ]
         );
 
+        // Array to hold tag IDs
+        $tagIds = [];
+
+        // Check if each selected tag already exists in the tags table
+        foreach ($this->selectedTags as $tagName) {
+            // Check if the tag already exists in the database
+            $tag = Tag::firstOrCreate(
+                ['name' => $tagName], // Look for an existing tag by name
+                ['name' => $tagName]  // If not found, create a new tag with the name
+            );
+
+            // Add the tag ID to the array
+            $tagIds[] = $tag->id;
+        }
+
+        // Sync the tags (attach only the new or missing tags, remove any unselected ones)
+        $job->tags()->sync($tagIds);
+
         $this->closeModal();
-       session()->flash('success', 'Job updated successfully');
+        session()->flash('success', 'Job updated successfully');
+    }
+
+
+
+    public function openAddModal()
+    {
+        $this->isAddModalOpen = true;
+    }
+
+    public function closeAddModal()
+    {
+        $this->isAddModalOpen = false;
     }
 
     public function add()

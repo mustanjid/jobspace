@@ -34,10 +34,10 @@ class EmpJobManager extends Component
     public $suggestedTags = [];
     public $tags = [];
 
-    // public function mount()
-    // {
-
-    // }
+    public function mount()
+    {
+        
+    }
 
     public function addTag($tagName)
     {
@@ -122,7 +122,6 @@ class EmpJobManager extends Component
         $this->jobEditFeature = Job::findOrFail($jobID)->featured;
         $this->jobEditStatus = Job::findOrFail($jobID)->status;
         $this->suggestedTags = Tag::all()->pluck('name')->toArray();
-        $this->tags = Job::findOrFail($jobID)->tags->pluck('name')->toArray();
     }
 
     public function update()
