@@ -18,14 +18,17 @@ use App\Livewire\UserJobView;
 use App\Livewire\UserView;
 use Illuminate\Support\Facades\Route;
 
+// general user view routes
 Route::get('/', [JobController::class, 'index']);
 Route::get('/all-jobs', UserJobView::class);
 
+// employers job and info update routes
 Route::get('/employers/{employer:id}', [EmployerController::class, 'edit']);
 Route::patch('/employers/{employer}', [EmployerController::class, 'updatePassword']);
+
+//user info update routes
 Route::get('/update-password', [PasswordController::class, 'edit'])->middleware('auth');
 Route::post('/update-password', [PasswordController::class, 'updatePassword'])->middleware('auth');
-
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot-password');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'verifyEmail'])->name('forgot-password.verify');
 Route::get('/reset-password', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset-password');
@@ -33,35 +36,40 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'updatePassword
 
 // Route::get('/search', JobSearchController::class);
 
+//clicking on any tag, view related active job including with tag
 Route::get('/tags/{tag:name}', TagController::class);
+
+//employer job create and update routes
 Route::get('/tags', [JobController::class, 'fetchTags'])->middleware('auth');
 Route::get('/jobs/create', [JobController::class, 'create'])->middleware('auth');
 Route::post('/jobs', [JobController::class, 'store'])->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::get('/emp-job-view', EmpJobManager::class);
+});
 
+//auth routes
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('signupForm');
     Route::post('/register', [RegisteredUserController::class, 'store']);
     Route::get('/login', [LoginController::class, 'create'])->name('loginForm');
     Route::post('/login', [LoginController::class, 'store'])->name('login');
 });
-
 Route::delete('/logout', [LoginController::class, 'destroy'])->middleware('auth');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/emp-job-view', EmpJobManager::class);
-});
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index']);
+
     Route::get('/users', UserView::class);
+
     Route::get('/jobs', JobView::class);
+    
     Route::get('/employers', EmployerView::class);
+
+    Route::get('/roles', [PositionContoller::class, 'list']);
+    Route::get('/roles/add', [PositionContoller::class, 'add']);
+    Route::post('/roles/add', [PositionContoller::class, 'insert']);
+    Route::get('/roles/edit/{id}', [PositionContoller::class, 'edit']);
+    Route::post('/roles/edit/{id}', [PositionContoller::class, 'update']);
+    Route::post('/roles/delete/{id}', [PositionContoller::class, 'delete']);
 });
-
-
-Route::get('admin/roles', [PositionContoller::class, 'list']);
-Route::get('admin/roles/add', [PositionContoller::class, 'add']);
-Route::post('/admin/roles/add', [PositionContoller::class, 'insert']);
-Route::get('admin/roles/edit/{id}', [PositionContoller::class, 'edit']);
-Route::post('admin/roles/edit/{id}', [PositionContoller::class, 'update']);
-Route::post('admin/roles/delete/{id}', [PositionContoller::class, 'delete']); 

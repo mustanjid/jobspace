@@ -57,11 +57,13 @@
                 <h1 class="p-2 text-center text-sm">All Users</h1>
                 <!-- Start coding here -->
                 <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+                    @if (!empty($permissionAddUser))
                     <div class="flex p-4">
                         <button type="button" wire:click="openAddModal"
                             class="rounded-lg bg-blue-700 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
                             User</button>
                     </div>
+                    @endif
 
                     <div class="d flex items-center justify-between p-4">
                         <div class="flex w-2/3 justify-between">
@@ -185,6 +187,7 @@
                 </div>
             </div>
 
+            @if (!empty($permissionAddUser))
             {{-- Add user Modal --}}
             @if ($isAddModalOpen)
                 <div
@@ -300,7 +303,9 @@
                     </div>
                 </div>
             @endif
+            @endif
 
+            @if (!empty($permissionEditUser))
             {{-- Edit user modal --}}
             @if ($isOpen)
                 <div
@@ -394,7 +399,9 @@
                     </div>
                 </div>
             @endif
+            @endif
 
+            @if (!empty($permissionDeleteUser))
             @if ($isDeleteModalOpen)
                 <div
                     class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
@@ -434,8 +441,7 @@
                     </div>
                 </div>
             @endif
-
-
+            @endif
 
         </x-dashboard-layout>
     </div>

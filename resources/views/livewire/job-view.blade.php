@@ -50,11 +50,14 @@
             <h1 class="p-2 text-center text-sm">All Jobs</h1>
             <!-- Start coding here -->
             <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+                @if (!empty($permissionAddJob))
                 <div class="flex p-4">
                     <button type="button" wire:click="openAddModal"
                         class="rounded-lg bg-blue-700 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
                         a Job</button>
                 </div>
+                @endif
+
                 <div class="d flex items-center justify-between p-4">
                     <div class="flex w-2/3 justify-between">
                         <div class="relative w-full">
@@ -183,315 +186,391 @@
             </div>
         </div>
 
-
+        @if (!empty($permissionAddJob))
         @if ($isAddModalOpen)
-       <div
-        class="min-w-screen fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
-        <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
-        <div class="relative mx-auto my-auto w-full max-w-5xl p-6 bg-white rounded-xl shadow-lg overflow-hidden">
-            <!-- Content -->
-            <p class="text-center text-lg font-semibold">Job Add Form</p>
-            <div class="mt-4">
-                <!-- Body -->
-                <div class="flex-auto justify-center p-4 text-center space-y-4">
-                    <form wire:submit.prevent="add">
-                        @csrf
-                        <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                            <!-- Title -->
-                            <div>
-                                <label for="title" class="mb-1 block text-sm font-medium text-gray-900">Title</label>
-                                <input type="text" wire:model="jobEditTitle" id="title"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="Web Developer" required />
-                                @error('jobEditTitle') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- Salary -->
-                            <div>
-                                <label for="salary" class="mb-1 block text-sm font-medium text-gray-900">Salary</label>
-                                <input type="text" id="salary" wire:model="jobEditSalary" wire:ignore.self
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="40,000 - 50,000 Tk" required />
-                                @error('jobEditSalary') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- Location -->
-                            <div>
-                                <label for="location" class="mb-1 block text-sm font-medium text-gray-900">Location</label>
-                                <input type="text" id="location" wire:model="jobEditLocation"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="Dhaka, Bangladesh" required />
-                                @error('jobEditLocation') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- URL -->
-                            <div>
-                                <label for="url" class="mb-1 block text-sm font-medium text-gray-900">Url</label>
-                                <input type="text" id="url" wire:model="jobEditUrl"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="http://example.com" required />
-                                @error('jobEditUrl') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- Schedule -->
-                            <div>
-                                <label for="schedule" class="mb-1 block text-sm font-medium text-gray-900">Schedule</label>
-                                <select id="schedule" wire:model="jobEditSchedule"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="select">Select</option>
-                                    <option value="Full Time">Full Time</option>
-                                    <option value="Part Time">Part Time</option>
-                                </select>
-                                @error('jobEditSchedule') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- Feature -->
-                            <div>
-                                <label for="featured" class="mb-1 block text-sm font-medium text-gray-900">Feature</label>
-                                <select id="featured" wire:model="jobEditFeature"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="select">Select</option>
-                                    <option value=1>Featured</option>
-                                    <option value=0>Unfeatured</option>
-                                </select>
-                                @error('jobEditFeature') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- Status -->
-                            <div>
-                                <label for="status" class="mb-1 block text-sm font-medium text-gray-900">Status</label>
-                                <select id="status" wire:model="jobEditStatus"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="select">Select</option>
-                                    <option value=1>Active</option>
-                                    <option value=0>Inactive</option>
-                                </select>
-                                @error('jobEditStatus') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-    
-                            <!-- Employer -->
-                            <div>
-                                <label for="employer" class="mb-1 block text-sm font-medium text-gray-900">Employer</label>
-                                <select id="employer" wire:model="jobEditEmployer"
-                                    class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="select">Select</option>
-                                    @foreach (\App\Models\Employer::all() as $employer)
-                                    <option value="{{ $employer->id }}">{{ $employer->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('jobEditEmployer') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
+            <div
+                class="min-w-screen fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
+                <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
+                <div
+                    class="relative mx-auto my-auto w-full max-w-5xl overflow-hidden rounded-xl bg-white p-6 shadow-lg">
+                    <!-- Content -->
+                    <div class="mt-2">
+                        <!-- Body -->
+                        <div class="flex-auto justify-center space-y-4 p-4 text-center">
+                            <form wire:submit.prevent="add">
+                                @csrf
+                                <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                    <!-- Title -->
+                                    <div>
+                                        <label for="title"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Title</label>
+                                        <input type="text" wire:model="jobEditTitle" id="title"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Web Developer" required />
+                                        @error('jobEditTitle')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
 
-                        <!-- New Tag Input -->
-                        <div class="mt-4">
-                          <input type="text" id="tags" wire:model="tagInput" wire:keydown.enter.prevent="addTag()"
-                            class="block w-full rounded-sm border border-gray-300 bg-gray-50 p-1.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Management, Marketing" />
-                            <button type="button" wire:click="addTag()" class="mt-2 text-sm text-blue-500">Add Tag</button>
-                        </div>
+                                    <!-- Salary -->
+                                    <div>
+                                        <label for="salary"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Salary</label>
+                                        <input type="text" id="salary" wire:model="jobEditSalary"
+                                            wire:ignore.self
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="40,000 - 50,000 Tk" required />
+                                        @error('jobEditSalary')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
 
-                        <!-- Suggested Tags -->
-                        <div class="mt-4">
-                            <p class="font-semibold">Suggested Tags</p>
-                            <div class="flex flex-wrap gap-2" wire:ignore>
-                                @foreach ($suggestedTags as $tag)
-                                <button type="button" wire:click="selectSuggestedTag({{ $tag['id'] }})"
-                                    class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full text-xs">
-                                    {{ $tag['name'] }}
-                                </button>
-                                @endforeach
-                            </div>
-                        </div>
-                   <!-- Display selected tags -->
-                <div class="mt-3">
-                    <span class="text-xs font-medium text-gray-700">Selected Tags:</span>
-                    <div class="flex flex-wrap mt-2">
-                        @foreach ($selectedTags as $tag)
-                        <span wire:key="tag-{{ $tag['id'] }}" class="m-1 inline-flex items-center rounded bg-gray-200 px-2 py-1 text-xs text-gray-700">
-                            {{ $tag['name'] }}
-                            <button wire:click="removeTag({{ $tag['id'] }})" class="ml-2 text-red-500">x</button>
-                        </span>
-                        @endforeach
-                    </div>
-                </div>
-                    
-    
-                        <!-- Submit Button -->
-                        <div class="mt-4">
-                            <button type="submit"
-                                class="w-3/5 rounded-sm bg-blue-700 px-4 py-1.5 text-xs text-white hover:bg-blue-800">Add
-                                Job</button>
-                        </div>
-                    </form>
-                </div>
-    
-                <!-- Footer -->
-                <div class="mt-4 flex justify-between p-2">
-                    <p>Jobspace</p>
-                    <button wire:click="closeModal()"
-                        class="btn btn-sm bg-red-500 text-white hover:bg-red-600 px-4 py-1 rounded-sm">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-        @endif
+                                    <!-- Location -->
+                                    <div>
+                                        <label for="location"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Location</label>
+                                        <input type="text" id="location" wire:model="jobEditLocation"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Dhaka, Bangladesh" required />
+                                        @error('jobEditLocation')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
 
-        @if ($isOpen)
-           <div
-            class="min-w-screen fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
-            <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
-            <div class="relative mx-auto my-auto w-full max-w-5xl p-6 bg-white rounded-xl shadow-lg overflow-hidden">
-                <p class="text-center text-lg font-semibold">Update Job Form</p>
-                <div class="mt-4">
-                    <!-- Body -->
-                    <div class="flex-auto justify-center p-4 text-center space-y-4">
-                        <form wire:submit.prevent="updateJob">
-                            @csrf
-                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                                <!-- Title -->
-                                <div>
-                                    <label for="title" class="mb-1 block text-sm font-medium text-gray-900">Title</label>
-                                    <input type="text" wire:model="jobEditTitle" id="title"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Web Developer" required />
-                                    @error('jobEditTitle') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                    <!-- URL -->
+                                    <div>
+                                        <label for="url"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Url</label>
+                                        <input type="text" id="url" wire:model="jobEditUrl"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="http://example.com" required />
+                                        @error('jobEditUrl')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Schedule -->
+                                    <div>
+                                        <label for="schedule"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Schedule</label>
+                                        <select id="schedule" wire:model="jobEditSchedule"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            <option value="Full Time">Full Time</option>
+                                            <option value="Part Time">Part Time</option>
+                                        </select>
+                                        @error('jobEditSchedule')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Feature -->
+                                    <div>
+                                        <label for="featured"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Feature</label>
+                                        <select id="featured" wire:model="jobEditFeature"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            <option value=1>Featured</option>
+                                            <option value=0>Unfeatured</option>
+                                        </select>
+                                        @error('jobEditFeature')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div>
+                                        <label for="status"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Status</label>
+                                        <select id="status" wire:model="jobEditStatus"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            <option value=1>Active</option>
+                                            <option value=0>Inactive</option>
+                                        </select>
+                                        @error('jobEditStatus')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Employer -->
+                                    <div>
+                                        <label for="employer"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Employer</label>
+                                        <select id="employer" wire:model="jobEditEmployer"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            @foreach (\App\Models\Employer::all() as $employer)
+                                                <option value="{{ $employer->id }}">{{ $employer->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('jobEditEmployer')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
-        
-                                <!-- Salary -->
-                                <div>
-                                    <label for="salary" class="mb-1 block text-sm font-medium text-gray-900">Salary</label>
-                                    <input type="text" id="salary" wire:model="jobEditSalary"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="40,000 - 50,000 Tk" required />
-                                    @error('jobEditSalary') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+
+                                <!-- New Tag Input -->
+                                <div class="mt-4 space-y-2">
+                                    <label for="tags" class="mb-1 block text-sm font-medium text-gray-900">Add a
+                                        tag and press enter button or clik on add tag button (up to 6 tags)</label>
+                                    <input type="text" id="tags" wire:model="tagInput"
+                                        wire:keydown.enter.prevent="addTag()"
+                                        class="block w-full rounded-sm border border-gray-300 bg-gray-50 p-1.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                        placeholder="Management, Marketing" />
+                                    <button type="button" wire:click="addTag()"
+                                        class="rounded-lg bg-blue-700 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">Add
+                                        Tag</button>
+
                                 </div>
-        
-                                <!-- Location -->
                                 <div>
-                                    <label for="location" class="mb-1 block text-sm font-medium text-gray-900">Location</label>
-                                    <input type="text" id="location" wire:model="jobEditLocation"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Dhaka, Bangladesh" required />
-                                    @error('jobEditLocation') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                    @error('tagInput')
+                                    <span class="text-sm text-red-500">{{ $message }}</span>
+                                    @enderror
+                                    @error('tag_limit')
+                                    <span class="text-sm text-red-500">{{ $message }}</span>
+                                    @enderror
+                                    @error('duplicate_tag')
+                                    <span class="text-sm text-red-500">{{ $message }}</span>
+                                    @enderror
                                 </div>
-        
-                                <!-- URL -->
-                                <div>
-                                    <label for="url" class="mb-1 block text-sm font-medium text-gray-900">Url</label>
-                                    <input type="text" id="url" wire:model="jobEditUrl"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="http://example.com" required />
-                                    @error('jobEditUrl') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                                </div>
-        
-                                <!-- Schedule -->
-                                <div>
-                                    <label for="schedule" class="mb-1 block text-sm font-medium text-gray-900">Schedule</label>
-                                    <select id="schedule" wire:model="jobEditSchedule"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                        <option value="select">Select</option>
-                                        <option value="Full Time">Full Time</option>
-                                        <option value="Part Time">Part Time</option>
-                                    </select>
-                                    @error('jobEditSchedule') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                                </div>
-        
-                                <!-- Status -->
-                                <div>
-                                    <label for="status" class="mb-1 block text-sm font-medium text-gray-900">Status</label>
-                                    <select id="status" wire:model="jobEditStatus"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                        <option value="select">Select</option>
-                                        <option value=1>Active</option>
-                                        <option value=0>Inactive</option>
-                                    </select>
-                                    @error('jobEditStatus') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                                </div>
-        
-                                <!-- Employer -->
-                                <div>
-                                    <label for="employer" class="mb-1 block text-sm font-medium text-gray-900">Employer</label>
-                                    <select id="employer" wire:model="jobEditEmployer"
-                                        class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
-                                        <option value="select">Select</option>
-                                        @foreach (\App\Models\Employer::all() as $employer)
-                                        <option value="{{ $employer->id }}" {{ $job && $job->employer_id == $employer->id ?
-                                            'selected' : '' }}>
-                                            {{ $employer->name }}
-                                        </option>
+
+                                <!-- Suggested Tags -->
+                                <div class="mt-2">
+                                    <div class="flex flex-wrap gap-2" wire:ignore>
+                                        <p class="text-sm font-bold">Suggested Tags:</p>
+                                        @foreach ($suggestedTags as $tag)
+                                            <button type="button"
+                                                wire:click="selectSuggestedTag({{ $tag['id'] }})"
+                                                class="rounded-full bg-gray-200 px-3 py-1 text-xs hover:bg-gray-300">
+                                                {{ $tag['name'] }}
+                                            </button>
                                         @endforeach
-                                    </select>
-                                    @error('jobEditEmployer') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                    </div>
                                 </div>
-                            </div>
-        
-                    <div class="mt-4">
-                    
-                    <!-- Error message for empty tag selection -->
-                <!-- Tags Section -->
-                <div class="mt-4">
-                    <label for="tags" class="mb-2 block text-xs font-medium text-gray-900">Tags (Add and press Enter)</label>
-                    <input type="text" id="tags" name="tags" wire:model="tagInput" wire:keydown.enter.prevent="addTag()"
-                        class="block w-full rounded-sm border border-gray-300 bg-gray-50 p-1.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="Management, Marketing" />
-                </div>
-                @if (empty($selectedTags) && session()->has('error'))
-                <div class="text-xs text-red-600 mt-2">
-                    {{ session('error') }}
-                </div>
-                @endif
+                                <!-- Display selected tags -->
+                                <div class="mt-2">
+                                    <div class="mt-2 flex flex-wrap">
+                                        <p class="text-sm font-bold text-blue-600">Selected Tags:</p>
+                                        @foreach ($selectedTags as $tag)
+                                        <span wire:key="tag-{{ $tag['id'] }}"
+                                            class="m-1 inline-flex items-center rounded bg-gray-200 px-2 py-1 text-xs text-gray-700">
+                                            {{ $tag['name'] }}
+                                            <button wire:click="removeTag({{ $tag['id'] }})" class="ml-2 text-red-500">x</button>
+                                        </span>
+                                        @endforeach
+                                    </div>
+                                </div>
 
-                <!-- Suggested Tags -->
-                <div class="mt-3">
-                    <span class="text-xs font-medium text-gray-700">Suggested Tags:</span>
-                    <div class="flex flex-wrap mt-2">
-                        @foreach ($suggestedTags as $tag)
-                        <span wire:click="selectSuggestedTag({{ $tag->id }})"
-                            class="m-1 inline-flex items-center rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 cursor-pointer hover:bg-blue-100">
-                            {{ $tag->name }}
-                        </span>
-                        @endforeach
-                    </div>
-                </div>
-                
-              <!-- Selected Tags -->
-            <div class="mt-3">
-                <span class="text-xs font-medium text-gray-700">Selected Tags:</span>
-                <div class="flex flex-wrap mt-2">
-                    @foreach ($selectedTags as $tag)
-                    <span class="m-1 inline-flex items-center rounded bg-gray-200 px-2 py-1 text-xs text-gray-700">
-                        {{ $tag['name'] }}
-                    </span>
-                    @endforeach
-                </div>
-            </div>
-        
-                            <!-- Submit Button -->
-                            <div class="mt-4">
-                                <button type="submit"
-                                    class="w-full rounded-sm bg-blue-700 px-4 py-1.5 text-xs text-white hover:bg-blue-800">
-                                    Update Job
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-        
-                    <!-- Footer -->
-                    <div class="mt-4 flex justify-between p-2">
-                        <p>Jobspace</p>
-                        <button wire:click="closeModal()"
-                            class="btn btn-sm bg-red-500 text-white hover:bg-red-600 px-4 py-1 rounded-sm">
-                            Cancel
-                        </button>
+                                <!-- Submit Button -->
+                                <div class="mt-4">
+                                    <button type="submit"
+                                        class="w-3/5 rounded-sm bg-blue-700 px-4 py-1.5 text-xs text-white hover:bg-blue-800">Add
+                                        Job</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="mt-4 flex justify-between p-2">
+                            <p>Add Job Form</p>
+                            <button wire:click="closeAddModal()"
+                                class="btn btn-sm rounded-sm bg-red-500 px-4 py-1 text-white hover:bg-red-600">
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
         @endif
 
+        @if (!empty($permissionEditJob))
+        @if ($isOpen)
+            <div
+                class="min-w-screen fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
+                <div class="absolute inset-0 z-0 bg-black opacity-80"></div>
+                <div
+                    class="relative mx-auto my-auto w-full max-w-5xl overflow-hidden rounded-xl bg-white p-6 shadow-lg">
+                    <!-- Content -->
+                    <div class="mt-2">
+                        <!-- Body -->
+                        <div class="flex-auto justify-center space-y-4 p-4 text-center">
+                            <form wire:submit.prevent="update">
+                                @csrf
+                                <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                    <!-- Title -->
+                                    <div>
+                                        <label for="title"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Title</label>
+                                        <input type="text" wire:model="jobEditTitle" id="title"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Web Developer" required />
+                                        @error('jobEditTitle')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Salary -->
+                                    <div>
+                                        <label for="salary"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Salary</label>
+                                        <input type="text" id="salary" wire:model="jobEditSalary"
+                                            wire:ignore.self
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="40,000 - 50,000 Tk" required />
+                                        @error('jobEditSalary')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Location -->
+                                    <div>
+                                        <label for="location"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Location</label>
+                                        <input type="text" id="location" wire:model="jobEditLocation"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Dhaka, Bangladesh" required />
+                                        @error('jobEditLocation')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- URL -->
+                                    <div>
+                                        <label for="url"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Url</label>
+                                        <input type="text" id="url" wire:model="jobEditUrl"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="http://example.com" required />
+                                        @error('jobEditUrl')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Schedule -->
+                                    <div>
+                                        <label for="schedule"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Schedule</label>
+                                        <select id="schedule" wire:model="jobEditSchedule"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            <option value="Full Time">Full Time</option>
+                                            <option value="Part Time">Part Time</option>
+                                        </select>
+                                        @error('jobEditSchedule')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Feature -->
+                                    <div>
+                                        <label for="featured"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Feature</label>
+                                        <select id="featured" wire:model="jobEditFeature"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            <option value=1>Featured</option>
+                                            <option value=0>Unfeatured</option>
+                                        </select>
+                                        @error('jobEditFeature')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div>
+                                        <label for="status"
+                                            class="mb-1 block text-sm font-medium text-gray-900">Status</label>
+                                        <select id="status" wire:model="jobEditStatus"
+                                            class="block w-full rounded-sm border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="select">Select</option>
+                                            <option value=1>Active</option>
+                                            <option value=0>Inactive</option>
+                                        </select>
+                                        @error('jobEditStatus')
+                                            <span class="text-xs text-red-600">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700">Add a tag and press enter button or clik on add tag button (up to 6 tags))</label>
+
+                                    <!-- Selected Tags -->
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <p class="text-sm text-blue-500 font-bold">Selected Tags: </p>
+                                        @foreach ($selectedTags as $tag)
+                                            <span
+                                                class="flex items-center gap-1 rounded-full bg-blue-200 px-2 py-1 text-sm text-blue-800">
+                                                {{ $tag['name'] }}
+                                                <button type="button" wire:click="removeTag({{ $tag["id"] }})"
+                                                    class="text-red-500">
+                                                    &times;
+                                                </button>
+                                            </span>
+                                        @endforeach
+                                    </div>
+
+                                    <!-- Tag Input -->
+                                    <div class="mt-2 space-y-2">
+                                        <input type="text" id="tags" wire:model="tagInput" wire:keydown.enter.prevent="addTag()"
+                                            class="block w-full rounded-sm border border-gray-300 bg-gray-50 p-1.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Management, Marketing" />
+                                        <button type="button" wire:click="addTag"
+                                            class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                                            Add Tag
+                                        </button>
+                                        
+                                        @error('tagInput')
+                                            <span class="text-sm text-red-500">{{ $message }}</span>
+                                        @enderror
+                                        @error('tag_limit')
+                                            <span class="text-sm text-red-500">{{ $message }}</span>
+                                        @enderror
+                                        @error('duplicate_tag')
+                                        <span class="text-sm text-red-500">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Suggested Tags -->
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <p class="text-sm font-bold">Suggested Tags: </p>
+                                        @foreach ($suggestedTags as $tag)
+                                            <button type="button"
+                                                wire:click="selectSuggestedTag({{ $tag->id }})"
+                                                class="rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-800">
+                                                {{ $tag->name }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                 <div class="mt-4">
+                                    <button type="submit"
+                                        class="w-3/5 rounded-sm bg-blue-700 px-4 py-1.5 text-xs text-white hover:bg-blue-800">Update
+                                        Job</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="mt-4 flex justify-between p-2">
+                            <p>Edit Job Form</p>
+                            <button wire:click="closeModal()"
+                                class="btn btn-sm rounded-sm bg-red-500 px-4 py-1 text-white hover:bg-red-600">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+        @endif
+
+        @if (!empty($permissionDeleteJob))
         @if ($isDeleteModalOpen)
             <div
                 class="min-w-screen animated fadeIn faster fixed inset-0 left-0 top-0 z-50 flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat outline-none focus:outline-none">
@@ -528,6 +607,7 @@
                     </div>
                 </div>
             </div>
+        @endif
         @endif
 
     </x-dashboard-layout>
