@@ -1,4 +1,4 @@
-@props(['fixed' => false])
+@props(['fixed' => false, 'activeRoute'=> null])
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,14 +15,15 @@
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,600;1,600&display=swap"
         rel="stylesheet">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <title>Job Space</title>
-    @vite(['resources/js/app.js'])
     @livewireStyles
+   @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
 
 <body>
     <div class="mb-24">
-        <x-nav-bar />
+       <x-nav-bar :activeRoute="$activeRoute"/>
     </div>
 
     <div class="mb-16 mt-20 space-y-10">
@@ -33,5 +34,4 @@
    <x-footer :fixed="$fixed" />
     @livewireScripts
 </body>
-
 </html>

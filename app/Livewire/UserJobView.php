@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Job;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Route;
 
 class UserJobView extends Component
 {
@@ -14,6 +15,18 @@ class UserJobView extends Component
     public $perPage = 5;
     public $isTag = '';
     public $isStatus = '';
+    public $fixed = true;
+
+    public $activeRoute;
+
+    public function mount()
+    {
+        $this->activeRoute = request()->is('/') || request()->is('home')
+        ? 'home'
+        : (request()->is('all-jobs') ? 'all-jobs' : 'home');
+
+
+    }
 
     public function resetFields()
     {
@@ -32,10 +45,10 @@ class UserJobView extends Component
     public function render()
     {
         $jobs = Job::latest()
-            ->with(['employer', 'tags'])
+            ->with(['employer', 'tags', 'employer.user'])
             ->where('status', 1) // Ensure only active jobs
-            ->whereHas('employer', function ($query) {
-                $query->where('status', 1); // Ensure only active employers
+            ->whereHas('employer.user', function ($query) {
+                $query->where('status', 1); // Ensure only active users through the employer
             })
             ->when(
                 $this->search !== '',
@@ -68,7 +81,8 @@ class UserJobView extends Component
 
         return view('livewire.user-job-view', [
             'jobs' => $jobs,
-            'fixed' => $this->fixed
+            'fixed' => $this->fixed,
+            'activeRoute' => $this->activeRoute,
         ]);
     }
 }

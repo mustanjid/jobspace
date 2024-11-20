@@ -1,5 +1,40 @@
 <x-dashboard-layout>
     <div class="mx-auto max-w-screen-xl px-4 lg:px-1"">
+        @if (session('success'))
+        <div id="alert-3"
+            class="mb-4 flex items-center rounded-lg bg-green-50 p-4 text-green-800 dark:bg-gray-800 dark:text-green-400"
+            role="alert">
+            <svg class="h-4 w-4 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+            </svg>
+            <span class="sr-only">Update</span>
+            <div class="ms-3 text-sm font-medium">
+        
+                {{ session('success') }}
+        
+            </div>
+        </div>
+        @endif
+        
+        @if (session('failure'))
+        <div id="alert-2"
+            class="mb-4 flex items-center rounded-lg bg-red-50 p-4 text-red-800 dark:bg-gray-800 dark:text-red-400"
+            role="alert">
+            <svg class="h-4 w-4 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+            </svg>
+            <span class="sr-only">Info</span>
+            <div class="ms-3 text-sm font-medium">
+                {{ session('failure') }}
+            </div>
+        
+        
+        </div>
+        @endif
         <h1 class="p-2 text-center text-sm">All Roles</h1>
         @php
             $permissionAddRole = App\Models\PositionPermission::getPermission('add role', Auth::user()->position_id);
@@ -50,7 +85,7 @@
                                     @endif
 
                                     @if (!empty($permissionDeleteRole))
-                                        <a href="/admin//roles/delete/{{ $role->id }}"
+                                        <a href="/admin/roles/delete/{{ $role->id }}"
                                             class="mr-1 rounded text-sm font-semibold text-red-500 hover:text-teal-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="2" stroke="currentColor" class="h-5 w-5">

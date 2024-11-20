@@ -39,7 +39,6 @@ class EmployerView extends Component
     {
         $this->search = '';
         $this->perPage = 5;
-        $this->isRole = '';
         $this->sortBy = 'created_at';
         $this->sortDir = 'DESC';
     }
@@ -96,10 +95,10 @@ class EmployerView extends Component
     {
         $permission = PositionPermission::getPermission('delete user', Auth::user()->position_id);
         if ($permission) {
-            $employer = Employer::findOrFail($this->employerDeleteID);
-            $employer->delete();
+            $user = User::findOrFail($this->employerDeleteID);
+            $user->delete();
             $this->closeDeleteModal();
-            request()->session()->flash('failure', 'User deleted !');
+            request()->session()->flash('failure', 'Employer deleted !');
         } else {
             abort(404);
         }
@@ -112,31 +111,27 @@ class EmployerView extends Component
     public function render()
     {
         $employers = DB::table('employers')
-            ->join('users', 'users.id', '=', 'employers.user_id')
-            ->join('jobs', 'employers.id', '=', 'jobs.employer_id')
-            ->select(
-                'users.*',
-                'users.status as user_status',
-                'employers.name as company',
-                'employers.user_id as user_id',
-                'jobs.*',
-                DB::raw("count(jobs.id) as total_jobs_count"),
-                DB::raw("SUM(CASE WHEN jobs.status = 1 THEN 1 ELSE 0 END) as active_jobs_count"),
-                DB::raw("SUM(CASE WHEN jobs.featured = 1 THEN 1 ELSE 0 END) as featured_jobs_count"),
-            )
-            ->when($this->search, function ($query) {
-                $query->where(function ($query) {
-                    $query->where('employers.name', 'like', '%' . $this->search . '%')
-                        ->orWhere('users.name', 'like', '%' . $this->search . '%')
-                        ->orWhere('users.email', 'like', '%' . $this->search . '%');
-                });
-            })
+        ->join('users', 'users.id', '=', 'employers.user_id')
+        ->leftJoin('jobs', 'employers.id', '=', 'jobs.employer_id')
+        ->select(
+            'users.*',
+            'users.status as user_status', // User status
+            'employers.name as company',
+            'employers.user_id as user_id',
+            'jobs.*',
+            DB::raw("count(jobs.id) as total_jobs_count"),
+            DB::raw("SUM(CASE WHEN jobs.status = 1 THEN 1 ELSE 0 END) as active_jobs_count"),
+            DB::raw("SUM(CASE WHEN jobs.featured = 1 THEN 1 ELSE 0 END) as featured_jobs_count")
+        )
+        ->when($this->search, function ($query) {
+            $query->where(function ($query) {
+                $query->where('employers.name', 'like', '%' . $this->search . '%')
+                    ->orWhere('users.name', 'like', '%' . $this->search . '%')
+                    ->orWhere('users.email', 'like', '%' . $this->search . '%');
+            });
+        })
             ->when($this->isActive !== '', function ($query) {
-                $query->where('users.status', $this->isActive);
-            })
-            ->when($this->sortBy !== 'name', function ($query) {
-                // Sort by other job columns
-                $query->orderBy($this->sortBy, $this->sortDir);
+                $query->where('users.status', $this->isActive); // Filters active/inactive users
             })
             ->when($this->sortBy === 'total_jobs_count', function ($query) {
                 $query->orderBy(DB::raw('total_jobs_count'), $this->sortDir);
@@ -147,8 +142,13 @@ class EmployerView extends Component
             ->when($this->sortBy === 'featured_jobs_count', function ($query) {
                 $query->orderBy(DB::raw('featured_jobs_count'), $this->sortDir);
             })
+            ->when($this->sortBy !== 'name', function ($query) {
+                $query->orderBy($this->sortBy, $this->sortDir); // Sort by selected column
+            })
             ->groupBy('users.id', 'employers.id')
             ->paginate($this->perPage);
+
+
         return view('livewire.employer-view', [
             'employers' => $employers
         ]);

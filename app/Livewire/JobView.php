@@ -86,7 +86,7 @@ class JobView extends Component
         }
 
         // Add the suggested tag to the selected tags array
-        $this->selectedTags[] = $tag;
+        $this->selectedTags[] = strtolower($tag);
 
         $this->resetErrorBag();
     }
@@ -172,7 +172,7 @@ class JobView extends Component
 
         // Get the existing tags
         $this->selectedTags = $job->tags->map(function ($tag) {
-            return ['id' => $tag->id, 'name' => $tag->name];
+            return ['id' => $tag->id, 'name' => strtolower($tag->name)];
         })->toArray();
 
         // Get suggested tags excluding the ones already assigned to the job
@@ -210,9 +210,11 @@ class JobView extends Component
 
         // Sync tags
         $tagIds = collect($this->selectedTags)->map(function ($tag) {
-            // Check if the tag exists, otherwise create it
-            return Tag::firstOrCreate(['name' => $tag['name']])->id;
+            // Convert tag name to lowercase before checking or creating
+            $tagName = strtolower($tag['name']);
+            return Tag::firstOrCreate(['name' => $tagName])->id;
         })->toArray();
+
 
         $job->tags()->sync($tagIds);
 
@@ -278,11 +280,11 @@ class JobView extends Component
     private function syncTags($tags)
     {
         return collect($tags)->map(function ($tag) {
-            // Create or find the tag in the database
-            return Tag::firstOrCreate(['name' => $tag['name']])->id;
+            // Convert tag name to lowercase before checking or creating
+            $tagName = strtolower($tag['name']);
+            return Tag::firstOrCreate(['name' => $tagName])->id;
         })->toArray();
     }
-
 
     public function render()
     {

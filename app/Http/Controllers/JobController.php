@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\JobCreate;
 use App\Models\Job;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
@@ -19,9 +20,9 @@ class JobController extends Controller
     public function index()
     {
         $jobs = Job::latest()
-            ->with(['employer', 'tags'])
+            ->with(['employer', 'tags', 'employer.user'])
             ->where('status', 1) // Active jobs
-            ->whereHas('employer', function ($query) {
+            ->whereHas('employer.user', function ($query) {
                 $query->where('status', 1); // Active employer
             })
             ->get()
@@ -29,10 +30,17 @@ class JobController extends Controller
 
         $tags = Tag::whereHas('jobs', function ($query) {
             $query->where('status', 1) // Active jobs
-                ->whereHas('employer', function ($query) {
-                    $query->where('status', 1); // Active employer
+            ->whereHas('employer', function ($query) {
+                $query->where('status', 1) // Active employers
+                ->whereHas('user', function ($query) {
+                    $query->where('status', 1); // Active users
                 });
-        })->get();
+            });
+        })
+        ->withCount('jobs') // Count the number of jobs related to each tag
+        ->orderByDesc('jobs_count') // Order by the job count in descending order
+        ->limit(8) // Limit to top 8 tags
+        ->get();
 
         $featuredJobs = $jobs->get(1)?->take(6); // Top 6 featured jobs
         $nonFeaturedJobs = $jobs->get(0)?->take(9);
@@ -91,10 +99,16 @@ class JobController extends Controller
 
         if (isset($validated['tags'])) {
             foreach ($validated['tags'] as $tagName) {
+                $tagName = strtolower(trim($tagName));
                 $tag = Tag::firstOrCreate(['name' => trim($tagName)]);
                 $job->tags()->attach($tag);
             }
         }
+
+        event(new JobCreate([
+            'title' => $job->title,
+            'salary' => $job->salary,
+        ]));
 
         return redirect('/')->with('message', 'Job posted successfully!');
     }

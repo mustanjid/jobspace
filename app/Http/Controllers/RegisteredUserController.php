@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\DB;
 
 class RegisteredUserController extends Controller
 {
@@ -31,29 +32,39 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        $userAttributes = $request->validate([
+        // Validate both user and employer data
+        $data = $request->validate([
+            // User validation rules
             'name' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Password::min(6)]
-        ]);
+            'password' => ['required', 'confirmed', Password::min(6)],
 
-        $employerAttributes = $request->validate([
+            // Employer validation rules
             'employer' => ['required'],
-            'logo' => ['required', File::types(['jpeg', 'jpg', 'png', 'webp'])],
+            'logo' => ['required', 'file', 'max:512', File::types(['jpeg', 'jpg', 'png', 'webp'])],
         ]);
 
+        DB::transaction(function () use ($data, $request) {
+            // Create the user
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => bcrypt($data['password']),
+                'status' => 0
+            ]);
 
-        $user = User::create($userAttributes);
+            // Save the logo and get the path
+            $logoPath = $request->logo->store('logos');
 
-        
-        $logoPath = $request->logo->store('logos');
-        
-        $user->employer()->create([
-            'name' => $employerAttributes['employer'],
-            'logo' => $logoPath
-        ]);
+            // Create the employer associated with the user
+            $user->employer()->create([
+                'name' => $data['employer'],
+                'logo' => $logoPath,
+            ]);
 
-        Auth::login($user);
+            // Automatically log in the user
+            Auth::login($user);
+        });
 
         return redirect('/');
     }

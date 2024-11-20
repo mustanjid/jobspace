@@ -150,7 +150,7 @@
                                         </button>
                                         @endif
                                         @if (!empty($permissionDeleteEmployer))
-                                        <button wire:click="openDeleteModal({{ $employer->id }})"
+                                        <button wire:click="openDeleteModal({{ $employer->user_id }})"
                                             class="mr-1 rounded text-sm font-semibold text-red-500 hover:text-teal-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="2" stroke="currentColor" class="h-5 w-5">

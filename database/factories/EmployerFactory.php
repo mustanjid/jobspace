@@ -17,10 +17,18 @@ class EmployerFactory extends Factory
      */
     public function definition(): array
     {
+        $image = fake()->image(
+            storage_path('app/public/logos'),
+            100, 
+            100, 
+            null,
+            false
+        );
+
         return [
             'user_id' => User::factory(),
             'name' => fake()->company(),
-            'logo' => "logos/LldkmYQQVZ4P7r4gomqytrm0aqgd3Rb0EUjO5dNp.webp",
+            'logo' => "logos/{$image}",
         ];
     }
 }

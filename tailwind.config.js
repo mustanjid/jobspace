@@ -8,6 +8,7 @@ export default {
         "./resources/**/*.js",
         "./resources/**/*.js.map",
         "./resources/**/*.vue",
+        "./node_modules/flowbite/**/*.js",
     ],
     theme: {
         extend: {

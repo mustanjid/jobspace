@@ -37,7 +37,7 @@ class PositionContoller extends Controller
         $position->save();
 
         PositionPermission::InsertUpdateRecord($request->permission_id, $position->id);
-        return redirect();
+        return redirect('admin/roles')->with('s', 'Role added successfully!');
     }
 
     public function edit($id)
@@ -55,6 +55,13 @@ class PositionContoller extends Controller
         $position->save();
 
         PositionPermission::InsertUpdateRecord($request->permission_id, $position->id);
-        return redirect();
+        return redirect('admin/roles')->with('success', 'Role updated successfully!');
+    }
+
+    public function delete($id)
+    {
+        $position = Position::findOrFail($id);
+        $position->delete();
+        return redirect('admin/roles')->with('failure', 'Role deleted!');
     }
 }

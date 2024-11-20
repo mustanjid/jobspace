@@ -3,7 +3,7 @@
 <footer class="{{ $fixed ? 'fixed bottom-0 left-0 z-20 w-full bg-white' : 'bg-white rounded-lg m-4' }}">
     <div class="w-full mx-auto max-w-screen-xl p-4 flex justify-center gap-4 items-center">
         <div>
-            <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href=https://mustanjid.github.io/"
+            <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© <?php echo date("Y"); ?> <a href=https://mustanjid.github.io/"
                     class="hover:underline text-blue-700 underline">Md Al Mustanjid</a>. Job Space.
             </span>
         </div>

@@ -1,5 +1,6 @@
 <div>
-    <x-layout :fixed="$fixed">
+    @props(['fixed' => false, 'activeRoute'])
+    <x-layout :fixed="$fixed" :activeRoute="$activeRoute">
         <div class="space-y-4">
 
             <!-- Filters Section -->
@@ -79,7 +80,10 @@
                     @endif
                     @endforeach
                 </div>
-                {{ $jobs->links() }}
+                <div class="mt-4">
+                    {{ $jobs->links() }}
+                </div>
+                
                 @else
                 <h4 class="text-center text-gray-500 dark:text-gray-400">Found no jobs!</h4>
                 @endif

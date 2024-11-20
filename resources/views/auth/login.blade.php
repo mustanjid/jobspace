@@ -1,4 +1,5 @@
-<x-layout>
+@props(['fixed' => false, 'activeRoute'])
+<x-layout :fixed="true">
     <x-page-heading>Log In</x-page-heading>
     @if (session('success'))
     <div id="successMessage" class="flex items-center bg-blue-500 px-4 py-3 text-sm font-bold text-white" role="alert">

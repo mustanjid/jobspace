@@ -12,7 +12,9 @@ class TagController extends Controller
         $jobs = $tag->jobs()
             ->where('status', 1) // Active jobs
             ->whereHas('employer', function ($query) {
-                $query->where('status', 1); // Active employer
+                $query->whereHas('user', function ($query) {
+                    $query->where('status', 1); // Active user
+                });
             })
             ->get();
 

@@ -24,8 +24,8 @@ class JobFactory extends Factory
             'location' => fake()->city,
             'schedule' => fake()->randomElement(['Full Time', 'Part Time']),
             'url' => fake()->url,
-            'featured' => false,
-            'status' => false
+            'featured' => fake()->randomElement([false, true]),
+            'status' => fake()->randomElement([false, true])
         ];
     }
 }

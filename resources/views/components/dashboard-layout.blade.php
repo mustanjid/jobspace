@@ -15,9 +15,10 @@
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,600;1,600&display=swap"
         rel="stylesheet">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <title>Job Space | Admin</title>
-    @vite(['resources/js/app.js'])
     @livewireStyles
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
@@ -45,7 +46,9 @@
 
                 <div class="flex items-center">
                     <div class="ms-3 flex items-center">
+                        <!-- Notification Button -->
                         <button id="dropdownNotificationButton" data-dropdown-toggle="dropdownNotification"
+                            aria-expanded="false"
                             class="relative inline-flex items-center text-center text-sm font-medium text-gray-500 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:text-white"
                             type="button">
                             <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -53,9 +56,9 @@
                                 <path
                                     d="M12.133 10.632v-1.8A5.406 5.406 0 0 0 7.979 3.57.946.946 0 0 0 8 3.464V1.1a1 1 0 0 0-2 0v2.364a.946.946 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C1.867 13.018 0 13.614 0 14.807 0 15.4 0 16 .538 16h12.924C14 16 14 15.4 14 14.807c0-1.193-1.867-1.789-1.867-4.175ZM3.823 17a3.453 3.453 0 0 0 6.354 0H3.823Z" />
                             </svg>
-
-                            <div
-                                class="absolute -top-0.5 start-2.5 block h-3 w-3 rounded-full border-2 border-white bg-red-500 dark:border-gray-900">
+                            <!-- Notification Badge -->
+                            <div id="notificationBadge"
+                                class="absolute -top-0.5 start-2.5 hidden h-3 w-3 rounded-full border-2 border-white bg-red-500 dark:border-gray-900">
                             </div>
                         </button>
 
@@ -67,44 +70,12 @@
                                 class="block rounded-t-lg bg-gray-50 px-4 py-2 text-center font-medium text-gray-700 dark:bg-gray-800 dark:text-white">
                                 Notifications
                             </div>
-                            <div class="divide-y divide-gray-100 dark:divide-gray-700">
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <div class="flex-shrink-0">
-                                        <img class="h-11 w-11 rounded-full"
-                                            src="/docs/images/people/profile-picture-1.jpg" alt="Jese image">
-                                        <div
-                                            class="absolute -mt-5 ms-6 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-blue-600 dark:border-gray-800">
-                                            <svg class="h-2 w-2 text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                                viewBox="0 0 18 18">
-                                                <path
-                                                    d="M1 18h16a1 1 0 0 0 1-1v-6h-4.439a.99.99 0 0 0-.908.6 3.978 3.978 0 0 1-7.306 0 .99.99 0 0 0-.908-.6H0v6a1 1 0 0 0 1 1Z" />
-                                                <path
-                                                    d="M4.439 9a2.99 2.99 0 0 1 2.742 1.8 1.977 1.977 0 0 0 3.638 0A2.99 2.99 0 0 1 13.561 9H17.8L15.977.783A1 1 0 0 0 15 0H3a1 1 0 0 0-.977.783L.2 9h4.239Z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="w-full ps-3">
-                                        <div class="mb-1.5 text-sm text-gray-500 dark:text-gray-400">New message from
-                                            <span class="font-semibold text-gray-900 dark:text-white">Jese Leos</span>:
-                                            "Hey, what's up? All set
-                                            for the presentation?"</div>
-                                        <div class="text-xs text-blue-600 dark:text-blue-500">a few moments ago</div>
-                                    </div>
-                                </a>
+                            <div id="notificationList" aria-live="polite"
+                                class="max-h-96 divide-y divide-gray-100 overflow-y-auto dark:divide-gray-700">
+                                <!-- Notifications will be dynamically appended here -->
                             </div>
-                            <a href="#"
-                                class="block rounded-b-lg bg-gray-50 py-2 text-center text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
-                                <div class="inline-flex items-center">
-                                    <svg class="me-2 h-4 w-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
-                                        <path
-                                            d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
-                                    </svg>
-                                    View all
-                                </div>
-                            </a>
                         </div>
+
                     </div>
 
                     <div class="ms-3 flex items-center">
@@ -125,13 +96,11 @@
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
                                     {{ Auth::user()->name }}
                                 </p>
-                                <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-300"
-                                    role="none">
+                                <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-300" role="none">
                                     {{ Auth::user()->email }}
                                 </p>
-                                <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-300"
-                                    role="none">
-                                    {{ $userPosition = \App\Models\Position::find(Auth::user()->id)->name }}
+                                <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-300" role="none">
+                                    {{ $userPosition = \App\Models\Position::find(Auth::user()->position_id)->name }}
                                 </p>
                             </div>
                             <ul class="py-1" role="none">
@@ -160,8 +129,7 @@
             <ul class="space-y-2 font-medium">
                 <x-panel-nav-links href="/admin/dashboard">
                     <svg class="h-5 w-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                        viewBox="0 0 22 21">
+                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
                         <path
                             d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
                         <path
@@ -275,11 +243,95 @@
     </aside>
 
     <div class="p-4 sm:ml-64">
-        <div class="mt-14 rounded-lg border-2 border-dashed border-gray-200 p-4">
+        <div class="mt-14 rounded-lg p-2">
             {{ $slot }}
         </div>
     </div>
     <x-footer :fixed="$fixed" />
+
+    <script type="module">
+        document.addEventListener("DOMContentLoaded", function() {
+            const NOTIFICATION_KEY = "notifications";
+            const MAX_DISPLAY_COUNT = 10;
+            const DISPLAY_DURATION = 2 * 60 * 1000; // 2 minutes in milliseconds
+
+            // Save a notification to localStorage
+            function saveNotificationToStorage(notification) {
+                const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_KEY)) || [];
+                notifications.push(notification);
+                localStorage.setItem(NOTIFICATION_KEY, JSON.stringify(notifications));
+            }
+
+            // Fetch valid (unexpired) notifications from localStorage
+            function getValidNotifications() {
+                const now = Date.now();
+                const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_KEY)) || [];
+                return notifications.filter((n) => now - n.timestamp < DISPLAY_DURATION);
+            }
+
+            function renderNotifications() {
+                const notificationBadge = document.getElementById("notificationBadge");
+                const notificationList = document.getElementById("notificationList");
+                if (notificationList) {
+                    notificationList.innerHTML = "";
+                }
+                const validNotifications = getValidNotifications();
+
+                // Render each notification 
+                validNotifications.slice(0, MAX_DISPLAY_COUNT).forEach((notification) => {
+                    const newNotification = document.createElement("a");
+                    newNotification.href = "#";
+                    newNotification.className = "flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700";
+                    newNotification.innerHTML = `
+        <div class="w-full ps-3">
+            <div class="mb-1.5 text-sm text-gray-500 dark:text-gray-400">
+                New Job Posted: <span class="font-semibold text-gray-900 dark:text-white">
+                    ${notification.title}
+                </span>
+            </div>
+        </div>
+        `;
+                    // Add the notification to the top of the list
+                    notificationList.prepend(newNotification);
+                });
+
+                // Update the badge visibility based on notification count
+                if (notificationBadge) {
+                    if (validNotifications.length > 0) {
+                        notificationBadge.classList.remove("hidden");
+                    } else {
+                        notificationBadge.classList.add("hidden");
+                    }
+                }
+            }
+
+            // Initialize Echo and listen for notifications
+            function initializeNotificationListener() {
+                if (window.Echo) {
+                    window.Echo.channel("notification").listen(".test.notification", (event) => {
+                        console.log("Event received:", event);
+
+                        const newNotification = {
+                            title: event.title,
+                            timestamp: Date.now(),
+                        };
+
+                        // Save the notification to localStorage
+                        saveNotificationToStorage(newNotification);
+
+                        // Re-render notifications
+                        renderNotifications();
+                    });
+                } else {
+                    console.error("Echo instance not initialized.");
+                }
+            }
+
+            // Initialize notifications on page load
+            renderNotifications();
+            initializeNotificationListener();
+        });
+    </script>
     @livewireScripts
 </body>
 
