@@ -17,7 +17,7 @@ class EmployerView extends Component
     public $search = '';
     public $perPage = 5;
     public $isActive = '';
-    public $sortBy = 'created_at';
+    public $sortBy = 'users.created_at';
     public $sortDir = 'DESC';
     public $employerEditID;
     public $employerStatus;
@@ -39,7 +39,7 @@ class EmployerView extends Component
     {
         $this->search = '';
         $this->perPage = 5;
-        $this->sortBy = 'created_at';
+        $this->sortBy = 'users.created_at';
         $this->sortDir = 'DESC';
     }
 
@@ -114,12 +114,14 @@ class EmployerView extends Component
         ->join('users', 'users.id', '=', 'employers.user_id')
         ->leftJoin('jobs', 'employers.id', '=', 'jobs.employer_id')
         ->select(
-            'users.*',
-            'users.status as user_status', // User status
+            'users.id as u_id',
+            'employers.id as e_id',
+            'users.name as user_name',
+            'users.email as user_email',
+            'users.status as user_status',
             'employers.name as company',
             'employers.user_id as user_id',
-            'jobs.*',
-            DB::raw("count(jobs.id) as total_jobs_count"),
+            DB::raw("COUNT(jobs.id) as total_jobs_count"),
             DB::raw("SUM(CASE WHEN jobs.status = 1 THEN 1 ELSE 0 END) as active_jobs_count"),
             DB::raw("SUM(CASE WHEN jobs.featured = 1 THEN 1 ELSE 0 END) as featured_jobs_count")
         )
@@ -131,22 +133,22 @@ class EmployerView extends Component
             });
         })
             ->when($this->isActive !== '', function ($query) {
-                $query->where('users.status', $this->isActive); // Filters active/inactive users
-            })
-            ->when($this->sortBy === 'total_jobs_count', function ($query) {
-                $query->orderBy(DB::raw('total_jobs_count'), $this->sortDir);
-            })
-            ->when($this->sortBy === 'active_jobs_count', function ($query) {
-                $query->orderBy(DB::raw('active_jobs_count'), $this->sortDir);
-            })
-            ->when($this->sortBy === 'featured_jobs_count', function ($query) {
-                $query->orderBy(DB::raw('featured_jobs_count'), $this->sortDir);
+                $query->where('users.status', $this->isActive);
             })
             ->when($this->sortBy !== 'name', function ($query) {
-                $query->orderBy($this->sortBy, $this->sortDir); // Sort by selected column
+                $query->orderBy($this->sortBy, $this->sortDir); // Sort dynamically
             })
-            ->groupBy('users.id', 'employers.id')
+            ->groupBy(
+                'users.id',
+                'employers.id',
+                'users.name',
+                'users.email',
+                'users.status',
+                'employers.name',
+                'employers.user_id'
+            )
             ->paginate($this->perPage);
+
 
 
         return view('livewire.employer-view', [

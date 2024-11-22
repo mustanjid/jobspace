@@ -28,11 +28,19 @@
 
                 <x-forms.checkbox label="Feature (Costs Extra)" name="featured" class="h-5 w-5 text-blue-500" />
 
-                <x-forms.input label="Tags (Add a tag and press enter or select from below)" id="tag-input"
-                    placeholder="Web Development" name="tag-input"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <div id="suggested-tags"></div>
-                <div id="selected-tags" class="mt-2">Selected Tags:</div>
+                <!-- Tags Section in One Column -->
+                <div class="flex flex-col space-y-2">
+                    <x-forms.input label="Tags (Add a tag and press enter or select from below)" id="tag-input"
+                        placeholder="Web Development" name="tag-input"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+
+                    <div id="suggested-tags" class="text-sm text-gray-600"></div>
+
+                    <div id="selected-tags" class="mt-2 text-sm text-gray-700">Selected Tags:</div>
+
+                    <!-- Error message container -->
+                    <div id="error-message" class="text-red-500 text-sm mt-2"></div>
+                </div>
 
                 <x-forms.button
                     class="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -47,13 +55,13 @@
     $(document).ready(function() {
         let selectedTags = [];
 
-        // Fetch suggested tags on page load
+        // Fetch suggested tags on page load (limit to 7)
         $.ajax({
             url: '/tags',
             method: 'GET',
             success: function(tags) {
                 let tagList = '';
-                tags.forEach(tag => {
+                tags.slice(0, 7).forEach(tag => { // Limit to 7 tags
                     tagList +=
                         `<button type="button" class="suggested-tag bg-gray-200 text-gray-700 py-1 px-2 rounded m-1 hover:bg-gray-300 transition" data-name="${tag.name}">${tag.name}</button>`;
                 });
@@ -72,7 +80,7 @@
             if (e.which === 13 || e.which === 10) { // Both default and numeric keypad Enter
                 e.preventDefault();
                 let tagName = $(this).val().trim();
-                if (tagName) {
+                if (tagName && selectedTags.length < 5) { // Check if not already selected and max 5 tags
                     addTag(tagName);
                     $(this).val(''); // Clear the input field
                 }
@@ -81,20 +89,31 @@
 
         // Add a tag (avoid duplicates, add hidden input, and display visually)
         function addTag(tagName) {
-            if (!selectedTags.includes(tagName)) {
-                selectedTags.push(tagName);
-                
-                // Add to selected tags display
-                $('#selected-tags').append(`
-                    <span class="tag-item bg-blue-100 text-blue-700 py-1 px-2 rounded inline-flex items-center m-1">
-                        ${tagName}
-                        <button type="button" class="remove-tag ml-2 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center focus:outline-none">&times;</button>
-                    </span>
-                `);
-                
-                // Add hidden input for form submission
-                $('#job-form').append(`<input type="hidden" name="tags[]" value="${tagName}" class="tag-hidden-input">`);
+            if (selectedTags.length >= 5) {
+                showError("You can only add up to 5 tags.");
+                return;
             }
+
+            if (selectedTags.includes(tagName)) {
+                showError("This tag has already been added.");
+                return;
+            }
+
+            selectedTags.push(tagName);
+
+            // Add to selected tags display
+            $('#selected-tags').append(`
+                <span class="tag-item bg-blue-100 text-blue-700 py-1 px-2 rounded inline-flex items-center m-1">
+                    ${tagName}
+                    <button type="button" class="remove-tag ml-2 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center focus:outline-none">&times;</button>
+                </span>
+            `);
+
+            // Add hidden input for form submission
+            $('#job-form').append(`<input type="hidden" name="tags[]" value="${tagName}" class="tag-hidden-input">`);
+
+            // Clear the error message if tag is successfully added
+            $('#error-message').text('');
         }
 
         // Remove tag when the "remove" button is clicked
@@ -107,6 +126,14 @@
 
             // Remove the corresponding hidden input
             $(`input[name="tags[]"][value="${tagName}"]`).remove();
+
+            // Clear the error message if tag is removed
+            $('#error-message').text('');
         });
+
+        // Function to show error messages
+        function showError(message) {
+            $('#error-message').text(message); // Display error message below the input
+        }
     });
 </script>

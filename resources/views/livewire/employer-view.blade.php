@@ -96,10 +96,9 @@
                                     ])
                                     @include('livewire.includes.table-sortable-th', [
                                     'displayName' => 'User',
-                                    'name' => 'name',
+                                    'name' => 'user_name',
                                     ])
                                     <th scope="col" class="px-2 py-2">Email</th>
-                                    <th scope="col" class="px-2 py-2">Location</th>
                                     <th scope="col" class="px-4 py-3">Status</th>
                                     @include('livewire.includes.table-sortable-th', [
                                     'displayName' => 'TJ',
@@ -127,9 +126,8 @@
                                     <th scope="row"
                                         class="whitespace-nowrap px-4 py-3 font-medium text-gray-900 dark:text-white">
                                         {{ $employer->company }}</th>
-                                    <td class="px-4 py-3"> {{ $employer->name }}</td>
-                                    <td class="px-2 py-2"> {{ $employer->email }}</td>
-                                    <td class="px-4 py-3"> {{ $employer->location }}</td>
+                                    <td class="px-4 py-3"> {{ $employer->user_name }}</td>
+                                    <td class="px-2 py-2"> {{ $employer->user_email }}</td>
                                     @if($employer->user_status)
                                     <td class="px-4 py-3 text-green-500">Active</td>
                                     @else
@@ -140,7 +138,7 @@
                                     <td class="px-4 py-3"> {{ $employer->active_jobs_count }}</td>
                                     <td class="px-4 py-3">
                                         @if (!empty($permissionEditEmployer))
-                                        <button wire:click="edit({{ $employer->user_id }})"
+                                        <button wire:click="edit({{ $employer->u_id }})"
                                             class="rounded text-sm font-semibold text-teal-500 hover:text-teal-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="2" stroke="currentColor" class="h-5 w-5">
@@ -150,7 +148,7 @@
                                         </button>
                                         @endif
                                         @if (!empty($permissionDeleteEmployer))
-                                        <button wire:click="openDeleteModal({{ $employer->user_id }})"
+                                        <button wire:click="openDeleteModal({{ $employer->u_id }})"
                                             class="mr-1 rounded text-sm font-semibold text-red-500 hover:text-teal-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="2" stroke="currentColor" class="h-5 w-5">
@@ -227,7 +225,7 @@
                         </div>
                         <!--footer-->
                         <div class="mt-2 flex justify-between p-2">
-                            <p>Employer - {{ $employer->name }}</p>
+                            <p>Employer - {{ $employer->company }}</p>
 
                             <button wire:click="closeUpdateModal()"
                                 class="mb-2 rounded-full border border-yellow-400 bg-yellow-400 px-5 py-2 text-sm font-medium tracking-wider text-white shadow-sm hover:bg-yellow-500 hover:shadow-lg md:mb-0">Cancel</button>

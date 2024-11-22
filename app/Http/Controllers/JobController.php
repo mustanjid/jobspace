@@ -100,10 +100,14 @@ class JobController extends Controller
         if (isset($validated['tags'])) {
             foreach ($validated['tags'] as $tagName) {
                 $tagName = strtolower(trim($tagName));
-                $tag = Tag::firstOrCreate(['name' => trim($tagName)]);
-                $job->tags()->attach($tag);
+                $tag = Tag::firstOrCreate(['name' => $tagName]); // Will create or find existing tag
+                // Attach the tag only if it's not already attached to the job
+                if (!$job->tags->contains($tag->id)) {
+                    $job->tags()->attach($tag);
+                }
             }
         }
+
 
         event(new JobCreate([
             'title' => $job->title,
@@ -139,7 +143,10 @@ class JobController extends Controller
 
     public function fetchTags()
     {
-        $tags = Tag::orderBy('created_at', 'desc')->take(5)->get();
+        $tags = Tag::withCount('jobs') 
+        ->orderBy('jobs_count', 'desc')
+        ->take(5)
+        ->get();
         return response()->json($tags);
     }
 

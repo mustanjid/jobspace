@@ -31,26 +31,76 @@ class EmpJobManager extends Component
         $jobEditStatus,
         $jobEditTags;
     public $jobDeleteID;
-    public $suggestedTags = [];
-    public $tags = [];
+    public $tagInput = '';
+    public $selectedTags = [];
+    public $suggestedTags;
 
     public function mount()
     {
-        
+        // Example: Get suggested tags
+        $this->suggestedTags = Tag::withCount('jobs')  // Counting jobs related to each tag
+        ->orderByDesc('jobs_count')  // Sorting tags by job count in descending order
+        ->take(5)  // Limiting the result to the top 7 tags
+            ->get();
     }
 
-    public function addTag($tagName)
+    public function addTag()
     {
-        $tagName = trim($tagName);
-        if ($tagName && !in_array($tagName, $this->tags)) {
-            $this->tags[] = $tagName;
+        // Validate the tag input
+        $this->validate(['tagInput' => 'required|string|max:255']);
+
+        // Check if the user has already added the maximum number of tags
+        if (count($this->selectedTags) >= 5) {
+            $this->addError('tag_limit', 'You can only add up to 5 tags.');
+            return;
         }
+
+        // Prevent duplicate tags
+        if (collect($this->selectedTags)->contains('name', $this->tagInput)) {
+            $this->addError('duplicate_tag', 'This tag has already been added.');
+            return;
+        }
+
+        // Add the new tag to the selected tags array
+        $this->selectedTags[] = ['id' => null, 'name' => $this->tagInput];
+
+        // Clear the input field and reset errors
+        $this->tagInput = '';
+        $this->resetErrorBag();
     }
 
-    public function removeTag($tagName)
+    public function selectSuggestedTag($tagId)
     {
-        $this->tags = array_filter($this->tags, fn($tag) => $tag !== $tagName);
+        // Check if the user has already selected the maximum number of tags
+        if (count($this->selectedTags) >= 5) {
+            $this->addError('tag_limit', 'You can only add up to 5 tags.');
+            return;
+        }
+
+        // Retrieve the tag by ID
+        $tag = $this->suggestedTags->firstWhere('id', $tagId);
+
+        // Prevent duplicate additions
+        if (!$tag || collect($this->selectedTags)->contains('id', $tagId)) {
+            $this->addError('duplicate_tag', 'This tag has already been added.');
+            return;
+        }
+
+        // Add the suggested tag to the selected tags array
+        $this->selectedTags[] = ['id' => $tag->id, 'name' => $tag->name];
+
+        $this->resetErrorBag();
     }
+
+    public function removeTag($tagId)
+    {
+        $this->selectedTags = array_filter($this->selectedTags, function ($tag) use ($tagId) {
+            return $tag['id'] !== $tagId;
+        });
+        // Re-index the array after removal to avoid array gaps
+        $this->selectedTags = array_values($this->selectedTags);
+    }
+
 
     public function setSortBy($sortByField)
     {
@@ -114,14 +164,25 @@ class EmpJobManager extends Component
     {
         $this->isOpen = true;
         $this->jobEditID = $jobID;
-        $this->jobEditTitle = Job::findOrFail($jobID)->title;
-        $this->jobEditSalary = Job::findOrFail($jobID)->salary;
-        $this->jobEditLocation = Job::findOrFail($jobID)->location;
-        $this->jobEditUrl = Job::findOrFail($jobID)->url;
-        $this->jobEditSchedule = Job::findOrFail($jobID)->schedule;
-        $this->jobEditFeature = Job::findOrFail($jobID)->featured;
-        $this->jobEditStatus = Job::findOrFail($jobID)->status;
-        $this->suggestedTags = Tag::all()->pluck('name')->toArray();
+        $job = Job::findOrFail($jobID);
+
+        $this->jobEditTitle = $job->title;
+        $this->jobEditSalary = $job->salary;
+        $this->jobEditLocation = $job->location;
+        $this->jobEditUrl = $job->url;
+        $this->jobEditSchedule = $job->schedule;
+        $this->jobEditFeature = $job->featured;
+        // Get the existing tags
+        $this->selectedTags = $job->tags->map(function ($tag) {
+            return ['id' => $tag->id, 'name' => strtolower($tag->name)];
+        })->toArray();
+
+        // Get suggested tags excluding the ones already assigned to the job
+        $this->suggestedTags = Tag::whereNotIn('id', $job->tags->pluck('id'))->take(5)->get();
+
+        // Clear input for new tag
+        $this->tagInput = '';
+
     }
 
     public function update()
@@ -149,16 +210,26 @@ class EmpJobManager extends Component
                 'schedule'  =>          $this->jobEditSchedule,
             ]
         );
-        $tagIds = [];
-        foreach ($this->tags as $tagName) {
-            $tag = Tag::firstOrCreate(['name' => $tagName]);
-            $tagIds[] = $tag->id;
-        }
+
+        $tagIds = collect($this->selectedTags)->map(function ($tag) {
+            // Convert tag name to lowercase before checking or creating
+            $tagName = strtolower($tag['name']);
+            return Tag::firstOrCreate(['name' => $tagName])->id;
+        })->toArray();
+
         $job->tags()->sync($tagIds);
 
         $this->closeModal();
-        $this->resetPage();
         session()->flash('success', 'Job updated successfully');
+    }
+
+    private function syncTags($tags)
+    {
+        return collect($tags)->map(function ($tag) {
+            // Convert tag name to lowercase before checking or creating
+            $tagName = strtolower($tag['name']);
+            return Tag::firstOrCreate(['name' => $tagName])->id;
+        })->toArray();
     }
 
     public function closeModal()

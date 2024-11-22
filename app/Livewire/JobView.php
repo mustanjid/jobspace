@@ -40,7 +40,12 @@ class JobView extends Component
     public function mount()
     {
         // Example: Get suggested tags
-        $this->suggestedTags = Tag::orderBy('count', 'desc')->take(7)->get();
+        $this->suggestedTags = Tag::withCount('jobs')  // Counting jobs related to each tag
+        ->orderByDesc('jobs_count')  // Sorting tags by job count in descending order
+        ->take(5)  // Limiting the result to the top 7 tags
+        ->get();
+
+
     }
 
     public function addTag()
@@ -86,7 +91,7 @@ class JobView extends Component
         }
 
         // Add the suggested tag to the selected tags array
-        $this->selectedTags[] = strtolower($tag);
+        $this->selectedTags[] = ['id' => $tag->id, 'name' => $tag->name];
 
         $this->resetErrorBag();
     }
@@ -96,8 +101,9 @@ class JobView extends Component
         $this->selectedTags = array_filter($this->selectedTags, function ($tag) use ($tagId) {
             return $tag['id'] !== $tagId;
         });
+        // Re-index the array after removal to avoid array gaps
+        $this->selectedTags = array_values($this->selectedTags);
     }
-
 
     public function setSortBy($sortByField)
     {
