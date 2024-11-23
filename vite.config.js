@@ -9,6 +9,7 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: "dist",
+        manifest: true,
+        outDir: "public/build",
     },
 });
