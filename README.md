@@ -6,7 +6,8 @@
 ---
 
 ## Features  
-- **Job Listings**: Post and browse jobs in one unified space.  
+- **Job Listings**: Post and browse jobs in one unified space.
+- **Tag based filtering**: Clicking on a tag will show the attached jobs with that tag.
 - **Advanced Search & Filtering**: Quickly find opportunities using keywords, categories, and status filters.  
 - **Real-Time Notifications**: Admins are updated with live job alerts powered by **Pusher**.  
 - **Role-Based Access Control**: Securely manage permissions for Admins, Employers, and Users.  
