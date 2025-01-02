@@ -52,7 +52,7 @@
 
                 <h1 class=" p-2 text-center text-sm">All Employers</h1>
                 <!-- Start coding here -->
-                <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+                <div class="relative overflow-hidden bg-white shadow-md sm:rounded-lg mb-4">
                     <div class="d flex items-center justify-between p-4">
                         <div class="flex w-2/3 justify-between">
                             <div class="relative w-full">

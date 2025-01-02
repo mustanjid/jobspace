@@ -48,6 +48,13 @@ class EmployerView extends Component
         $this->resetPage();
     }
 
+    public function closeUpdateModal()
+    {
+        $this->isOpen = false;
+        $this->reset('employerStatus');
+        $this->employerEditID = '';
+    }
+
     public function edit($employerID)
     {
         $permission = PositionPermission::getPermission('update employer', Auth::user()->position_id);
@@ -76,13 +83,6 @@ class EmployerView extends Component
         } else {
             abort(404);
         }
-    }
-
-    public function closeUpdateModal()
-    {
-        $this->isOpen = false;
-        $this->reset('employerStatus');
-        $this->employerEditID = '';
     }
 
     public function openDeleteModal($userID)

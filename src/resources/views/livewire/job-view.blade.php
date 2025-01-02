@@ -46,10 +46,10 @@
             );
         @endphp
 
-        <div class="mx-auto max-w-screen-xl px-4 lg:px-1"">
+        <div class="mx-auto max-w-screen-xl px-4 lg:px-1">
             <h1 class="p-2 text-center text-sm">All Jobs</h1>
             <!-- Start coding here -->
-            <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+            <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg mb-4">
                 @if (!empty($permissionAddJob))
                     <div class="flex p-4">
                         <button type="button" wire:click="openAddModal"
@@ -161,8 +161,6 @@
                                     </td>
                                 </tr>
                             @endforeach
-
-
                         </tbody>
                     </table>
                 </div>

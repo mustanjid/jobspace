@@ -1,5 +1,6 @@
 <div>
     @props(['fixed' => false, 'activeRoute'])
+    <title>Job Space</title>
     <x-layout :fixed="$fixed" :activeRoute="$activeRoute">
         <div class="space-y-4">
 
