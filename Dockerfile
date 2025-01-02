@@ -28,9 +28,13 @@ COPY package*.json ./
 RUN npm install
 
 # Copy Laravel and Vite app files
+COPY . .
 
 # Build assets
 RUN npm run build
+
+# Expose port 80 for the web server
+EXPOSE 80
 
 # Start the application
 CMD ["php-fpm"]
