@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y curl gnupg2 lsb-release ca-certificates
 
 # Install Node.js and npm
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - \
     && apt-get install -y nodejs
 
 # Install Composer globally
