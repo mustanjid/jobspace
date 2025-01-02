@@ -1,40 +1,36 @@
-# Use the official PHP image with FPM (FastCGI Process Manager)
-FROM php:8.2-fpm
+# Use a base PHP image for Laravel
+FROM php:8.1-fpm
 
-# Install system dependencies required for Laravel
+# Install system dependencies and Node.js
 RUN apt-get update && apt-get install -y \
     libpng-dev \
-    libjpeg62-turbo-dev \
+    libjpeg-dev \
     libfreetype6-dev \
-    zip \
     git \
-    curl \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    default-mysql-client  # Replace mysql-client with default-mysql-client
+    zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql \
+    && apt-get install -y curl gnupg2 lsb-release ca-certificates
 
-# Install PHP extensions for Laravel
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install gd
+# Install Node.js and npm
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs
 
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install Composer globally
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-WORKDIR /var/www/html
+# Set working directory
+WORKDIR /var/www
 
-# Install npm dependencies
-COPY package*.json ./
-RUN npm install
-
-# Copy Laravel and Vite app files
+# Copy the application files
 COPY . .
 
-# Build assets
-RUN npm run build
+# Install PHP and npm dependencies
+RUN composer install
+RUN npm install  # This is where npm install is failing, ensure npm is available now
 
-# Expose port 80 for the web server
+# Expose port (optional)
 EXPOSE 80
 
-# Start the application
+# Start Laravel with PHP-FPM
 CMD ["php-fpm"]
