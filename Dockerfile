@@ -1,36 +1,35 @@
-# Use a base PHP image for Laravel
 FROM php:8.1-fpm
 
-# Install system dependencies and Node.js
+# Install dependencies
 RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    git \
-    zip \
+    libzip-dev \
+    libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql \
-    && apt-get install -y curl gnupg2 lsb-release ca-certificates
+    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip xml
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - \
+# Install Node.js and NPM dependencies
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Install Composer globally
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /app
 
-# Copy the application files
+# Copy files
 COPY . .
 
-# Install PHP and npm dependencies
-RUN composer install
-RUN npm install  # This is where npm install is failing, ensure npm is available now
+# Install PHP and NPM dependencies
+RUN composer install --no-dev --optimize-autoloader
+RUN npm install
 
-# Expose port (optional)
+# Expose port and run PHP-FPM
 EXPOSE 80
-
-# Start Laravel with PHP-FPM
 CMD ["php-fpm"]
