@@ -1,6 +1,6 @@
 FROM php:8.1-fpm
 
-# Install dependencies
+# Install necessary libraries and dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql intl opcache zip xml
 
-# Install Node.js and NPM dependencies
+# Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
@@ -26,7 +26,7 @@ WORKDIR /app
 # Copy files
 COPY . .
 
-# Install PHP and NPM dependencies
+# Install PHP and Node dependencies
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 
