@@ -22,3 +22,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-in
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
+
+# Start the application
+CMD ["php-fpm"]
