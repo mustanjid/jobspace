@@ -23,5 +23,14 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Install npm dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy Laravel and Vite app files
+
+# Build assets
+RUN npm run build
+
 # Start the application
 CMD ["php-fpm"]
