@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip \
+    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip bcmath ctype \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -40,11 +40,22 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache && \
     chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Optimize Laravel application
+RUN php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
+
 # Install Composer globally
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Expose port 9000
 EXPOSE 9000
+
+# Set environment variable for PHP-FPM
+ENV PHP_FPM_LISTEN=9000
+
+# Health check
+HEALTHCHECK CMD curl --fail http://localhost:9000 || exit 1
 
 # Start PHP-FPM
 CMD ["php-fpm"]
