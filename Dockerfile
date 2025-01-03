@@ -4,15 +4,15 @@ FROM composer:2.6 as builder
 # Set working directory
 WORKDIR /app
 
-# Copy composer files from the src folder and install dependencies
+# Copy composer files and install dependencies
 COPY src/composer.json src/composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader -v --no-interaction
 
-# Copy application files from the src directory
-COPY src/ .
+# Copy application files
+COPY src ./
 
 # Stage 2: Production environment
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -25,14 +25,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libzip-dev \
     libicu-dev \
+    libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip bcmath ctype \
+    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip bcmath ctype xml \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy files from the builder stage (your Laravel app)
+# Copy files from the builder stage
 COPY --from=builder /app /var/www/html
 
 # Create necessary directories and set permissions
@@ -42,6 +43,9 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache && \
 
 # Install Composer globally
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Clear Composer cache
+RUN composer clear-cache
 
 # Expose port 9000
 EXPOSE 9000
