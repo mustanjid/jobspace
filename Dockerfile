@@ -4,15 +4,15 @@ FROM composer:2.6 as builder
 # Set working directory
 WORKDIR /app
 
-# Copy composer files and install dependencies
-COPY composer.json composer.lock ./
+# Copy composer files from the src folder and install dependencies
+COPY src/composer.json src/composer.lock ./
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy application files
-COPY . .
+# Copy application files from the src directory
+COPY src/ .
 
 # Stage 2: Production environment
-FROM php:8.2-fpm
+FROM php:8.1-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy files from the builder stage
+# Copy files from the builder stage (your Laravel app)
 COPY --from=builder /app /var/www/html
 
 # Create necessary directories and set permissions
@@ -40,22 +40,11 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache && \
     chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Optimize Laravel application
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
-
 # Install Composer globally
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Expose port 9000
 EXPOSE 9000
-
-# Set environment variable for PHP-FPM
-ENV PHP_FPM_LISTEN=9000
-
-# Health check
-HEALTHCHECK CMD curl --fail http://localhost:9000 || exit 1
 
 # Start PHP-FPM
 CMD ["php-fpm"]
