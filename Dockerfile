@@ -1,35 +1,33 @@
 FROM php:8.1-fpm
 
-# Install necessary libraries and dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     zip \
+    unzip \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libzip-dev \
     libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip xml
-
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
+    && docker-php-ext-install gd pdo pdo_mysql intl opcache zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /app
+WORKDIR /var/www/html
 
-# Copy files
+# Copy application files
 COPY . .
 
-# Install PHP and Node dependencies
-RUN composer install --no-dev --optimize-autoloader
-RUN npm install
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port and run PHP-FPM
-EXPOSE 80
+# Expose port 9000 and start PHP-FPM
+EXPOSE 9000
 CMD ["php-fpm"]
